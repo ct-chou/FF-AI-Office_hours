@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Setup Guide — FF Office Hours</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --border: #2a2d3a;
+    --text: #e0e0e6;
+    --muted: #8b8fa3;
+    --accent: #f0883e;
+    --accent2: #8ab4f8;
+    --accent3: #7ee8a8;
+    --code-bg: #141620;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 2rem 1rem;
+  }
+
+  .container { max-width: 860px; margin: 0 auto; }
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.3rem;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  /* Nav link back */
+  .back-link {
+    display: inline-block;
+    color: var(--accent2);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  /* Phase sections */
+  .phase {
+    margin-bottom: 2.5rem;
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .phase-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #1a1d27;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .phase-header h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  /* Steps */
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.2rem;
+    position: relative;
+  }
+
+  .step-label {
+    position: absolute;
+    top: -0.6rem;
+    left: 1.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.15rem 0.6rem;
+    border-radius: 4px;
+    background: var(--accent);
+    color: #1a1d27;
+  }
+
+  .step h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.6rem;
+    margin-top: 0.3rem;
+  }
+
+  .step p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+  }
+
+  /* OS Tabs */
+  .os-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0;
+    background: var(--code-bg);
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-bottom: none;
+  }
+
+  .os-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 0.8rem;
+    padding: 0.5rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+
+  .os-btn:hover { color: var(--text); background: #ffffff08; }
+  .os-btn.active { color: #fff; background: #ffffff12; }
+
+  .os-content { display: none; }
+  .os-content.active { display: block; }
+
+  /* Code blocks */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    overflow-x: auto;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  .os-tabs + .os-content.active pre {
+    border-radius: 0 0 8px 8px;
+    border-top: none;
+  }
+
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    color: #c9d1d9;
+  }
+
+  code.inline {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+
+  .cmd { color: var(--accent2); }
+  .flag { color: var(--accent3); }
+  .comment { color: #6a737d; }
+  .string { color: #d4a27f; }
+  .placeholder { color: var(--accent); font-style: italic; }
+
+  /* Callouts */
+  .tip {
+    background: #8ab4f810;
+    border-left: 3px solid var(--accent2);
+    padding: 0.8rem 1.2rem;
+    border-radius: 0 8px 8px 0;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .tip strong { color: var(--accent2); }
+
+  .warning {
+    background: #f0883e10;
+    border-left: 3px solid var(--accent);
+    padding: 0.8rem 1.2rem;
+    border-radius: 0 8px 8px 0;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .warning strong { color: var(--accent); }
+
+  .danger {
+    background: #f8514910;
+    border-left: 3px solid #f85149;
+    padding: 0.8rem 1.2rem;
+    border-radius: 0 8px 8px 0;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .danger strong { color: #f85149; }
+
+  /* Troubleshooting */
+  .troubleshoot {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .troubleshoot h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+
+  .issue {
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 0;
+  }
+
+  .issue:last-child { border-bottom: none; }
+
+  .issue-title {
+    font-weight: 600;
+    color: #f85149;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+  }
+
+  .issue-fix {
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .issue-fix pre {
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+  }
+
+  /* Checklist */
+  .checklist {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .checklist h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.4rem 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .check-item::before {
+    content: "☐";
+    color: var(--accent);
+    flex-shrink: 0;
+    font-size: 1rem;
+  }
+
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <a href="index.html" class="back-link">&larr; Back to AI CLI Setup Guide</a>
+
+  <h1>Git Setup Guide</h1>
+  <p class="subtitle">FF Office Hours &mdash; Install Git, configure SSH, and push your first commit</p>
+
+  <!-- ======================== PHASE 1: INSTALL ======================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">1</span>
+      <h2>Install Git</h2>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Install</span>
+      <h3>Download and install Git for your OS</h3>
+
+      <div class="os-tabs" data-group="install">
+        <button class="os-btn active" onclick="showOS(this, 'mac')">macOS</button>
+        <button class="os-btn" onclick="showOS(this, 'win')">Windows</button>
+        <button class="os-btn" onclick="showOS(this, 'linux')">Linux</button>
+        <button class="os-btn" onclick="showOS(this, 'wsl')">WSL2</button>
+      </div>
+
+      <div class="os-content active" data-os="mac" data-group="install">
+        <pre><code><span class="comment"># Option 1: Install via Homebrew (recommended)</span>
+<span class="cmd">brew</span> install git
+
+<span class="comment"># Option 2: Install Xcode Command Line Tools</span>
+<span class="cmd">xcode-select</span> <span class="flag">--install</span>
+
+<span class="comment"># Verify</span>
+<span class="cmd">git</span> <span class="flag">--version</span></code></pre>
+      </div>
+
+      <div class="os-content" data-os="win" data-group="install">
+        <pre><code><span class="comment"># Download from https://git-scm.com/downloads/win</span>
+<span class="comment"># Or install via winget:</span>
+<span class="cmd">winget</span> install Git.Git</code></pre>
+        <div class="warning" style="margin-bottom: 0.8rem;">
+          <strong>Installer settings we recommend:</strong>
+          <br>&bull; Default editor: <strong>Nano</strong> (avoid Vim if you're new to terminals)
+          <br>&bull; SSH: <strong>Bundled OpenSSH</strong>
+          <br>&bull; HTTPS backend: <strong>Native Windows Secure Channel</strong>
+          <br>&bull; Line endings: <strong>"Checkout as-is, commit Unix-style"</strong> (keeps LF everywhere)
+          <br>&bull; Terminal: <strong>MinTTY</strong>
+          <br>&bull; Git pull: <strong>Fast-forward or merge</strong> (default)
+        </div>
+      </div>
+
+      <div class="os-content" data-os="linux" data-group="install">
+        <pre><code><span class="comment"># Ubuntu / Debian</span>
+<span class="cmd">sudo</span> apt update && <span class="cmd">sudo</span> apt install git <span class="flag">-y</span>
+
+<span class="comment"># Fedora</span>
+<span class="cmd">sudo</span> dnf install git
+
+<span class="comment"># Arch</span>
+<span class="cmd">sudo</span> pacman <span class="flag">-S</span> git
+
+<span class="comment"># Verify</span>
+<span class="cmd">git</span> <span class="flag">--version</span></code></pre>
+      </div>
+
+      <div class="os-content" data-os="wsl" data-group="install">
+        <pre><code><span class="comment"># Git comes pre-installed in most WSL distros</span>
+<span class="comment"># Update to the latest version:</span>
+<span class="cmd">sudo</span> apt update && <span class="cmd">sudo</span> apt install git <span class="flag">-y</span>
+
+<span class="comment"># Verify</span>
+<span class="cmd">git</span> <span class="flag">--version</span></code></pre>
+        <div class="tip">
+          <strong>Note:</strong> WSL2 has its own separate Git install from Windows Git. You'll want to configure both if you use both environments.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== PHASE 2: CONFIGURE IDENTITY ======================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">2</span>
+      <h2>Configure Your Identity</h2>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Identity</span>
+      <h3>Set your name and email</h3>
+      <p>Every commit you make is tagged with your name and email. Set these globally so you don't have to repeat it per project.</p>
+
+      <pre><code><span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="string">"Your Name"</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="string">"your-email@example.com"</span></code></pre>
+
+      <div class="danger">
+        <strong>Use your GitHub no-reply email!</strong> If you use your personal email, GitHub may <strong>reject your push</strong> with the error: <code class="inline">GH007: Your push would publish a private email address</code>. To avoid this, use the no-reply email GitHub provides.
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Email Privacy</span>
+      <h3>Find your GitHub no-reply email</h3>
+      <p>Go to <a href="https://github.com/settings/emails">github.com/settings/emails</a> and look for an address like:</p>
+
+      <pre><code><span class="placeholder">12345678+yourusername@users.noreply.github.com</span></code></pre>
+
+      <p>Copy that address, then use it as your Git email:</p>
+
+      <pre><code><span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="string">"12345678+yourusername@users.noreply.github.com"</span></code></pre>
+
+      <div class="tip">
+        <strong>Why this matters:</strong> Your commit email is public in every repo you push to. Using the no-reply address keeps your personal email private while still linking commits to your GitHub profile.
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Defaults</span>
+      <h3>Set recommended defaults</h3>
+      <p>These settings will save you headaches down the road:</p>
+
+      <pre><code><span class="comment"># Set default branch name to "main"</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> init.defaultBranch main
+
+<span class="comment"># Use Unix-style line endings (important if you also use WSL2)</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> core.autocrlf input
+
+<span class="comment"># Set nano as your default editor (avoid Vim)</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> core.editor <span class="string">"nano"</span>
+
+<span class="comment"># Verify all your settings</span>
+<span class="cmd">git</span> config <span class="flag">--global --list</span></code></pre>
+    </div>
+  </div>
+
+  <!-- ======================== PHASE 3: SSH KEYS ======================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">3</span>
+      <h2>Set Up SSH Keys</h2>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Why SSH?</span>
+      <h3>SSH vs HTTPS</h3>
+      <p>There are two ways to authenticate with GitHub:</p>
+      <p><strong>HTTPS</strong> &mdash; Simpler to start. Prompts you to sign in via browser when you push. Good for getting started quickly.</p>
+      <p><strong>SSH</strong> &mdash; Requires one-time setup, but after that you never need to authenticate again. Recommended for regular use.</p>
+      <div class="tip">
+        <strong>Recommendation:</strong> Set up SSH now. It takes 5 minutes and saves you from login prompts every time you push.
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Step 1</span>
+      <h3>Generate an SSH key</h3>
+
+      <div class="os-tabs" data-group="ssh-gen">
+        <button class="os-btn active" onclick="showOS(this, 'mac')">macOS</button>
+        <button class="os-btn" onclick="showOS(this, 'win')">Windows</button>
+        <button class="os-btn" onclick="showOS(this, 'linux')">Linux / WSL2</button>
+      </div>
+
+      <div class="os-content active" data-os="mac" data-group="ssh-gen">
+        <pre><code><span class="cmd">ssh-keygen</span> <span class="flag">-t ed25519</span> <span class="flag">-C</span> <span class="string">"your-email@example.com"</span>
+
+<span class="comment"># Press Enter to accept default file location</span>
+<span class="comment"># Enter a passphrase (optional — press Enter to skip)</span></code></pre>
+      </div>
+
+      <div class="os-content" data-os="win" data-group="ssh-gen">
+        <pre><code><span class="comment"># Run in PowerShell (not as admin)</span>
+<span class="cmd">ssh-keygen</span> <span class="flag">-t ed25519</span> <span class="flag">-C</span> <span class="string">"your-email@example.com"</span>
+
+<span class="comment"># Press Enter to accept default file location</span>
+<span class="comment"># Enter a passphrase (optional — press Enter to skip)</span>
+
+<span class="comment"># Your key is saved at: C:\Users\YourName\.ssh\id_ed25519</span></code></pre>
+      </div>
+
+      <div class="os-content" data-os="linux" data-group="ssh-gen">
+        <pre><code><span class="cmd">ssh-keygen</span> <span class="flag">-t ed25519</span> <span class="flag">-C</span> <span class="string">"your-email@example.com"</span>
+
+<span class="comment"># Press Enter to accept default file location</span>
+<span class="comment"># Enter a passphrase (optional — press Enter to skip)</span>
+
+<span class="comment"># Your key is saved at: ~/.ssh/id_ed25519</span></code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Step 2</span>
+      <h3>Start the SSH agent and add your key</h3>
+
+      <div class="os-tabs" data-group="ssh-agent">
+        <button class="os-btn active" onclick="showOS(this, 'mac')">macOS</button>
+        <button class="os-btn" onclick="showOS(this, 'win')">Windows</button>
+        <button class="os-btn" onclick="showOS(this, 'linux')">Linux / WSL2</button>
+      </div>
+
+      <div class="os-content active" data-os="mac" data-group="ssh-agent">
+        <pre><code><span class="comment"># Start the agent</span>
+<span class="cmd">eval</span> <span class="string">"$(ssh-agent -s)"</span>
+
+<span class="comment"># Add your key</span>
+<span class="cmd">ssh-add</span> ~/.ssh/id_ed25519</code></pre>
+      </div>
+
+      <div class="os-content" data-os="win" data-group="ssh-agent">
+        <pre><code><span class="comment"># FIRST: Open PowerShell as Administrator and run these two lines:</span>
+<span class="cmd">Get-Service</span> ssh-agent | <span class="cmd">Set-Service</span> <span class="flag">-StartupType Automatic</span>
+<span class="cmd">Start-Service</span> ssh-agent
+
+<span class="comment"># THEN: In your regular (non-admin) PowerShell, add your key:</span>
+<span class="cmd">ssh-add</span> ~\.ssh\id_ed25519</code></pre>
+        <div class="danger">
+          <strong>Common error:</strong> "Access is denied" on <code class="inline">Set-Service</code> means you're not in an admin PowerShell. Right-click PowerShell &rarr; "Run as administrator" for just those first two lines.
+        </div>
+      </div>
+
+      <div class="os-content" data-os="linux" data-group="ssh-agent">
+        <pre><code><span class="comment"># Start the agent</span>
+<span class="cmd">eval</span> <span class="string">"$(ssh-agent -s)"</span>
+
+<span class="comment"># Add your key</span>
+<span class="cmd">ssh-add</span> ~/.ssh/id_ed25519</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Step 3</span>
+      <h3>Copy your public key</h3>
+
+      <div class="os-tabs" data-group="ssh-copy">
+        <button class="os-btn active" onclick="showOS(this, 'mac')">macOS</button>
+        <button class="os-btn" onclick="showOS(this, 'win')">Windows</button>
+        <button class="os-btn" onclick="showOS(this, 'linux')">Linux / WSL2</button>
+      </div>
+
+      <div class="os-content active" data-os="mac" data-group="ssh-copy">
+        <pre><code><span class="cmd">pbcopy</span> &lt; ~/.ssh/id_ed25519.pub</code></pre>
+      </div>
+
+      <div class="os-content" data-os="win" data-group="ssh-copy">
+        <pre><code><span class="cmd">Get-Content</span> ~\.ssh\id_ed25519.pub | <span class="cmd">Set-Clipboard</span></code></pre>
+      </div>
+
+      <div class="os-content" data-os="linux" data-group="ssh-copy">
+        <pre><code><span class="comment"># If xclip is installed:</span>
+<span class="cmd">xclip</span> <span class="flag">-sel clipboard</span> &lt; ~/.ssh/id_ed25519.pub
+
+<span class="comment"># Otherwise, print it and copy manually:</span>
+<span class="cmd">cat</span> ~/.ssh/id_ed25519.pub</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Step 4</span>
+      <h3>Add the key to GitHub</h3>
+      <p>Your public key is now on your clipboard. Add it to your GitHub account:</p>
+      <p>
+        1. Go to <a href="https://github.com/settings/keys">github.com/settings/keys</a><br>
+        2. Click <strong>"New SSH key"</strong><br>
+        3. Title: something like "Windows PC" or "MacBook"<br>
+        4. Paste your key (Ctrl+V / Cmd+V)<br>
+        5. Click <strong>"Add SSH key"</strong>
+      </p>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Step 5</span>
+      <h3>Test the connection</h3>
+      <pre><code><span class="cmd">ssh</span> <span class="flag">-T</span> git@github.com</code></pre>
+      <p>You should see: <code class="inline">Hi yourusername! You've successfully authenticated...</code></p>
+      <div class="tip">
+        <strong>Tip:</strong> If it asks "Are you sure you want to continue connecting?" type <strong>yes</strong>. This adds GitHub to your known hosts list and only happens once.
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== PHASE 4: ORGANIZE YOUR REPOS ======================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">4</span>
+      <h2>Organize Your Repos</h2>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Folder Structure</span>
+      <h3>Create a dedicated repos folder</h3>
+      <p>Keep all your Git repositories in one place &mdash; not scattered across your Desktop or Downloads.</p>
+
+      <div class="os-tabs" data-group="repos-folder">
+        <button class="os-btn active" onclick="showOS(this, 'mac')">macOS</button>
+        <button class="os-btn" onclick="showOS(this, 'win')">Windows</button>
+        <button class="os-btn" onclick="showOS(this, 'linux')">Linux / WSL2</button>
+      </div>
+
+      <div class="os-content active" data-os="mac" data-group="repos-folder">
+        <pre><code><span class="cmd">mkdir</span> ~/repos
+<span class="cmd">cd</span> ~/repos</code></pre>
+      </div>
+
+      <div class="os-content" data-os="win" data-group="repos-folder">
+        <pre><code><span class="cmd">mkdir</span> ~\repos
+<span class="cmd">cd</span> ~\repos</code></pre>
+      </div>
+
+      <div class="os-content" data-os="linux" data-group="repos-folder">
+        <pre><code><span class="cmd">mkdir</span> ~/repos
+<span class="cmd">cd</span> ~/repos</code></pre>
+      </div>
+
+      <div class="warning">
+        <strong>Windows users:</strong> Don't put repos inside OneDrive-synced folders! OneDrive can corrupt the <code class="inline">.git</code> directory and cause weird issues. The <code class="inline">~\repos</code> folder sits outside OneDrive by default.
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== PHASE 5: FIRST WORKFLOW ======================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">5</span>
+      <h2>Your First Clone, Commit &amp; Push</h2>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Clone</span>
+      <h3>Clone a repository</h3>
+      <p>Copy an existing GitHub repo to your machine. Always use the SSH URL (starts with <code class="inline">git@github.com</code>):</p>
+      <pre><code><span class="cmd">cd</span> ~/repos
+<span class="cmd">git</span> clone git@github.com:<span class="placeholder">username/repo-name</span>.git
+<span class="cmd">cd</span> <span class="placeholder">repo-name</span></code></pre>
+      <div class="tip">
+        <strong>Where to find the SSH URL:</strong> On the repo's GitHub page, click the green <strong>"Code"</strong> button, select the <strong>"SSH"</strong> tab, and copy the URL.
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Edit</span>
+      <h3>Make a change</h3>
+      <p>Edit or create a file &mdash; anything will do for testing:</p>
+      <pre><code><span class="comment"># Create a new file</span>
+<span class="cmd">echo</span> <span class="string">"Hello from my first commit!"</span> > test.txt</code></pre>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Stage</span>
+      <h3>Stage your changes</h3>
+      <p>Staging tells Git which changes you want to include in the next commit:</p>
+      <pre><code><span class="comment"># See what changed</span>
+<span class="cmd">git</span> status
+
+<span class="comment"># Stage a specific file</span>
+<span class="cmd">git</span> add test.txt
+
+<span class="comment"># Or stage everything</span>
+<span class="cmd">git</span> add .</code></pre>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Commit</span>
+      <h3>Commit your changes</h3>
+      <p>A commit is a snapshot of your staged changes with a descriptive message:</p>
+      <pre><code><span class="cmd">git</span> commit <span class="flag">-m</span> <span class="string">"add test file"</span></code></pre>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Push</span>
+      <h3>Push to GitHub</h3>
+      <p>Send your commit to the remote repository on GitHub:</p>
+      <pre><code><span class="cmd">git</span> push</code></pre>
+      <p>If everything is set up correctly, this should complete with no prompts. Check your repo on GitHub &mdash; your changes should be there.</p>
+    </div>
+  </div>
+
+  <!-- ======================== PHASE 6: ESSENTIAL COMMANDS ======================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">6</span>
+      <h2>Essential Git Commands</h2>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Cheat Sheet</span>
+      <h3>Commands you'll use every day</h3>
+      <pre><code><span class="comment"># Check what's changed</span>
+<span class="cmd">git</span> status
+
+<span class="comment"># See the actual changes line by line</span>
+<span class="cmd">git</span> diff
+
+<span class="comment"># View commit history</span>
+<span class="cmd">git</span> log <span class="flag">--oneline</span>
+
+<span class="comment"># Pull latest changes from GitHub</span>
+<span class="cmd">git</span> pull
+
+<span class="comment"># The full add → commit → push workflow</span>
+<span class="cmd">git</span> add .
+<span class="cmd">git</span> commit <span class="flag">-m</span> <span class="string">"describe what you changed"</span>
+<span class="cmd">git</span> push
+
+<span class="comment"># Create and switch to a new branch</span>
+<span class="cmd">git</span> checkout <span class="flag">-b</span> <span class="placeholder">branch-name</span>
+
+<span class="comment"># Switch back to main</span>
+<span class="cmd">git</span> checkout main
+
+<span class="comment"># Undo changes to a file (before staging)</span>
+<span class="cmd">git</span> checkout <span class="flag">--</span> <span class="placeholder">filename</span>
+
+<span class="comment"># Unstage a file (after git add, before commit)</span>
+<span class="cmd">git</span> reset HEAD <span class="placeholder">filename</span></code></pre>
+    </div>
+  </div>
+
+  <!-- ======================== TROUBLESHOOTING ======================== -->
+  <div class="troubleshoot">
+    <h2>Troubleshooting</h2>
+
+    <div class="issue">
+      <div class="issue-title">Permission denied (publickey)</div>
+      <div class="issue-fix">
+        Your SSH key isn't set up or isn't being found. Make sure you've added it to the SSH agent and to your GitHub account. Run <code class="inline">ssh -T git@github.com</code> to test. If it fails, re-do Phase 3.
+      </div>
+    </div>
+
+    <div class="issue">
+      <div class="issue-title">GH007: Your push would publish a private email address</div>
+      <div class="issue-fix">
+        You're using your personal email in commits and GitHub's email privacy is blocking it. Fix by switching to your no-reply email:
+        <pre><code><span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="string">"ID+user@users.noreply.github.com"</span>
+<span class="cmd">git</span> commit <span class="flag">--amend --reset-author --no-edit</span>
+<span class="cmd">git</span> push</code></pre>
+      </div>
+    </div>
+
+    <div class="issue">
+      <div class="issue-title">fatal: Unable to create '.../.git/index.lock': File exists</div>
+      <div class="issue-fix">
+        A previous Git operation crashed and left a lock file behind. Delete it and retry:
+        <pre><code><span class="comment"># macOS / Linux / WSL2</span>
+<span class="cmd">rm</span> .git/index.lock
+
+<span class="comment"># Windows PowerShell</span>
+<span class="cmd">Remove-Item</span> .git\index.lock</code></pre>
+      </div>
+    </div>
+
+    <div class="issue">
+      <div class="issue-title">Access is denied — Set-Service ssh-agent</div>
+      <div class="issue-fix">
+        The SSH agent service commands need admin privileges on Windows. Right-click PowerShell &rarr; <strong>"Run as administrator"</strong>, run the two service commands, then go back to your regular PowerShell for everything else.
+      </div>
+    </div>
+
+    <div class="issue">
+      <div class="issue-title">PowerShell: "cannot be loaded because running scripts is disabled"</div>
+      <div class="issue-fix">
+        Windows blocks scripts by default. Run this once in PowerShell:
+        <pre><code><span class="cmd">Set-ExecutionPolicy</span> <span class="flag">-Scope CurrentUser</span> RemoteSigned</code></pre>
+      </div>
+    </div>
+
+    <div class="issue">
+      <div class="issue-title">"command not found" after installing Git</div>
+      <div class="issue-fix">
+        Close your terminal completely and open a new one. The PATH environment variable needs to reload for the system to find Git.
+      </div>
+    </div>
+
+    <div class="issue">
+      <div class="issue-title">Line ending warnings (LF will be replaced by CRLF)</div>
+      <div class="issue-fix">
+        This happens when Windows and Linux line endings mix. Set this to normalize everything:
+        <pre><code><span class="cmd">git</span> config <span class="flag">--global</span> core.autocrlf input</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== CHECKLIST ======================== -->
+  <div class="checklist">
+    <h2>Setup Checklist</h2>
+    <div class="check-item">Git installed and <code class="inline">git --version</code> works</div>
+    <div class="check-item">Name set with <code class="inline">git config --global user.name</code></div>
+    <div class="check-item">GitHub no-reply email set with <code class="inline">git config --global user.email</code></div>
+    <div class="check-item">Default branch set to <code class="inline">main</code></div>
+    <div class="check-item">Line endings set to <code class="inline">core.autocrlf input</code></div>
+    <div class="check-item">Default editor set to <code class="inline">nano</code></div>
+    <div class="check-item">SSH key generated (<code class="inline">~/.ssh/id_ed25519</code> exists)</div>
+    <div class="check-item">SSH key added to SSH agent</div>
+    <div class="check-item">SSH public key added to <a href="https://github.com/settings/keys">GitHub settings</a></div>
+    <div class="check-item"><code class="inline">ssh -T git@github.com</code> says "successfully authenticated"</div>
+    <div class="check-item">Repos folder created (<code class="inline">~/repos</code>)</div>
+    <div class="check-item">Successfully cloned, committed, and pushed to a repo</div>
+  </div>
+
+  <div class="footer">
+    FF Office Hours &mdash; Git Setup Guide &mdash; April 2026
+  </div>
+
+</div>
+
+<script>
+function showOS(btn, os) {
+  const step = btn.closest('.step') || btn.closest('.phase');
+  const tabGroup = btn.parentElement.dataset.group;
+  const container = step || document;
+  container.querySelectorAll(`.os-tabs[data-group="${tabGroup}"] .os-btn`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  container.querySelectorAll(`.os-content[data-group="${tabGroup}"]`).forEach(c => c.classList.remove('active'));
+  container.querySelector(`.os-content[data-os="${os}"][data-group="${tabGroup}"]`).classList.add('active');
+}
+</script>
+
+</body>
+</html>
