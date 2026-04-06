@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WSL2 Setup Guide — FF Office Hours</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --border: #2a2d3a;
+    --text: #e0e0e6;
+    --muted: #8b8fa3;
+    --accent: #f0883e;
+    --accent2: #8ab4f8;
+    --accent3: #7ee8a8;
+    --code-bg: #141620;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 2rem 1rem;
+  }
+
+  .container { max-width: 860px; margin: 0 auto; }
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.3rem;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    color: var(--accent2);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  /* Decision section */
+  .decision {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .decision h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+
+  .decision p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+
+  .use-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.2rem;
+  }
+
+  .use-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem;
+  }
+
+  .use-card.yes { border-color: #7ee8a850; background: #7ee8a808; }
+  .use-card.no { border-color: #f8514950; background: #f8514908; }
+
+  .use-card h3 {
+    font-size: 0.9rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .use-card.yes h3 { color: var(--accent3); }
+  .use-card.no h3 { color: #f85149; }
+
+  .use-card ul {
+    list-style: none;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .use-card ul li {
+    padding: 0.2rem 0;
+  }
+
+  .use-card.yes ul li::before { content: "✓ "; color: var(--accent3); }
+  .use-card.no ul li::before { content: "✗ "; color: #f85149; }
+
+  /* Steps */
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.2rem;
+    position: relative;
+  }
+
+  .step-label {
+    position: absolute;
+    top: -0.6rem;
+    left: 1.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.15rem 0.6rem;
+    border-radius: 4px;
+    background: var(--accent);
+    color: #1a1d27;
+  }
+
+  .step h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.6rem;
+    margin-top: 0.3rem;
+  }
+
+  .step p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    overflow-x: auto;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    color: #c9d1d9;
+  }
+
+  code.inline {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+
+  .cmd { color: var(--accent2); }
+  .flag { color: var(--accent3); }
+  .comment { color: #6a737d; }
+  .string { color: #d4a27f; }
+
+  .tip {
+    background: #8ab4f810;
+    border-left: 3px solid var(--accent2);
+    padding: 0.8rem 1.2rem;
+    border-radius: 0 8px 8px 0;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .tip strong { color: var(--accent2); }
+
+  .warning {
+    background: #f0883e10;
+    border-left: 3px solid var(--accent);
+    padding: 0.8rem 1.2rem;
+    border-radius: 0 8px 8px 0;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .warning strong { color: var(--accent); }
+
+  .danger {
+    background: #f8514910;
+    border-left: 3px solid #f85149;
+    padding: 0.8rem 1.2rem;
+    border-radius: 0 8px 8px 0;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .danger strong { color: #f85149; }
+
+  /* Phase headers */
+  .phase { margin-bottom: 2.5rem; }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .phase-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #1a1d27;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .phase-header h2 { font-size: 1.3rem; font-weight: 700; }
+
+  /* Cheat sheet */
+  .cheat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .cheat h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+
+  /* Troubleshooting */
+  .troubleshoot {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .troubleshoot h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+
+  .issue {
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 0;
+  }
+
+  .issue:last-child { border-bottom: none; }
+
+  .issue-title {
+    font-weight: 600;
+    color: #f85149;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+  }
+
+  .issue-fix {
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .issue-fix pre {
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+  }
+
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 600px) {
+    .use-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <a href="index.html" class="back-link">&larr; Back to AI CLI Setup Guide</a>
+
+  <h1>WSL2 Setup Guide</h1>
+  <p class="subtitle">FF Office Hours &mdash; Run a full Linux environment inside Windows</p>
+
+  <!-- ======================== DECISION SECTION ======================== -->
+  <div class="decision">
+    <h2>Do you need WSL2?</h2>
+    <p>WSL2 (Windows Subsystem for Linux 2) gives you a real Linux environment running inside Windows. It's not required to use any of the AI CLI tools &mdash; Claude Code, Gemini CLI, and Codex all work natively on Windows with PowerShell. WSL2 is an optional upgrade for people who want a more developer-friendly environment.</p>
+    <p>Here's a quick way to decide:</p>
+
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h3>Install WSL2 if you...</h3>
+        <ul>
+          <li>Plan to write Python scripts or automation tools</li>
+          <li>Want to use Docker for containers</li>
+          <li>Work with repos that use bash scripts or Makefiles</li>
+          <li>Prefer Linux command-line tools (grep, sed, awk)</li>
+          <li>Want an environment that matches most online tutorials</li>
+          <li>Are comfortable with (or want to learn) the terminal</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h3>Skip WSL2 if you...</h3>
+        <ul>
+          <li>Just want to try the AI CLI tools quickly</li>
+          <li>Are brand new to the command line</li>
+          <li>Only plan to use these tools casually</li>
+          <li>Don't want to manage two environments</li>
+          <li>Have a Mac (macOS is already Unix-based)</li>
+          <li>Prefer to keep things simple for now</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== PHASE 1: INSTALL WSL2 ======================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">1</span>
+      <h2>Install WSL2</h2>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Requirements</span>
+      <h3>Check your Windows version</h3>
+      <p>WSL2 requires <strong>Windows 10 version 1903 or later</strong>, or <strong>Windows 11</strong>. To check your version, press <code class="inline">Win + R</code>, type <code class="inline">winver</code>, and hit Enter.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Install</span>
+      <h3>Run the WSL installer</h3>
+      <p>Open <strong>PowerShell as Administrator</strong> (right-click the Start button &rarr; "Terminal (Admin)" or search for PowerShell and right-click &rarr; "Run as administrator"):</p>
+      <pre><code><span class="cmd">wsl</span> <span class="flag">--install</span></code></pre>
+      <p>This installs WSL2 with Ubuntu as the default Linux distribution. <strong>Restart your computer</strong> when prompted.</p>
+      <div class="tip">
+        <strong>Want a different distro?</strong> Run <code class="inline">wsl --list --online</code> to see available distros, then <code class="inline">wsl --install -d Debian</code> (or whichever you prefer). Ubuntu is the most beginner-friendly.
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Setup</span>
+      <h3>Create your Linux user</h3>
+      <p>After your computer restarts, Ubuntu will launch automatically (or search "Ubuntu" in the Start menu). It will ask you to create a username and password:</p>
+      <pre><code><span class="comment"># You'll see something like this:</span>
+Enter new UNIX username: <span class="string">yourname</span>
+New password: <span class="string">********</span>
+Retype new password: <span class="string">********</span></code></pre>
+      <div class="warning">
+        <strong>Remember this password!</strong> You'll need it whenever you run <code class="inline">sudo</code> commands. It doesn't have to match your Windows password.
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Update</span>
+      <h3>Update system packages</h3>
+      <p>Always update packages right after a fresh install:</p>
+      <pre><code><span class="cmd">sudo</span> apt update && <span class="cmd">sudo</span> apt upgrade <span class="flag">-y</span></code></pre>
+    </div>
+  </div>
+
+  <!-- ======================== PHASE 2: SET UP DEV TOOLS ======================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">2</span>
+      <h2>Set Up Dev Tools</h2>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Node.js</span>
+      <h3>Install Node.js via nvm</h3>
+      <p>Gemini CLI and Codex require Node.js 20+. Using nvm (Node Version Manager) avoids permission issues and makes it easy to switch versions:</p>
+      <pre><code><span class="comment"># Install nvm</span>
+<span class="cmd">curl</span> <span class="flag">-o-</span> https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | <span class="cmd">bash</span>
+
+<span class="comment"># Reload your shell (important!)</span>
+<span class="cmd">source</span> ~/.bashrc
+
+<span class="comment"># Install the latest LTS version of Node</span>
+<span class="cmd">nvm</span> install <span class="flag">--lts</span>
+
+<span class="comment"># Verify</span>
+<span class="cmd">node</span> <span class="flag">--version</span>   <span class="comment"># Should show v20+</span>
+<span class="cmd">npm</span> <span class="flag">--version</span></code></pre>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Python</span>
+      <h3>Install Python</h3>
+      <p>Ubuntu comes with Python, but you may want to make sure you have the latest version and pip:</p>
+      <pre><code><span class="comment"># Install Python and pip</span>
+<span class="cmd">sudo</span> apt install python3 python3-pip python3-venv <span class="flag">-y</span>
+
+<span class="comment"># Verify</span>
+<span class="cmd">python3</span> <span class="flag">--version</span>
+<span class="cmd">pip3</span> <span class="flag">--version</span>
+
+<span class="comment"># Create an alias so "python" works (optional)</span>
+<span class="cmd">echo</span> <span class="string">'alias python=python3'</span> >> ~/.bashrc
+<span class="cmd">source</span> ~/.bashrc</code></pre>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Git</span>
+      <h3>Configure Git in WSL2</h3>
+      <p>WSL2 has its own Git installation, separate from Windows. You need to configure it independently. See our <a href="git-setup.html"><strong>Git Setup Guide</strong></a> for full instructions, but the essentials are:</p>
+      <pre><code><span class="comment"># Set your identity (use your GitHub no-reply email!)</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="string">"Your Name"</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="string">"ID+username@users.noreply.github.com"</span>
+
+<span class="comment"># Set defaults</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> init.defaultBranch main
+<span class="cmd">git</span> config <span class="flag">--global</span> core.editor <span class="string">"nano"</span></code></pre>
+      <div class="warning">
+        <strong>SSH keys:</strong> You'll also need to set up SSH keys inside WSL2 — your Windows SSH keys are in a different location. Follow the SSH section in the <a href="git-setup.html">Git Setup Guide</a>, selecting the "Linux / WSL2" tab for each step.
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== PHASE 3: INSTALL AI CLIs ======================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">3</span>
+      <h2>Install the AI CLIs</h2>
+    </div>
+
+    <div class="step">
+      <span class="step-label">All Three</span>
+      <h3>Install Claude Code, Gemini CLI, and Codex</h3>
+      <p>Inside your WSL2 terminal, all three tools use their standard Linux install commands:</p>
+      <pre><code><span class="comment"># Claude Code (native binary — no Node.js needed)</span>
+<span class="cmd">curl</span> <span class="flag">-fsSL</span> https://claude.ai/install.sh | <span class="cmd">bash</span>
+
+<span class="comment"># Gemini CLI</span>
+<span class="cmd">npm</span> install <span class="flag">-g</span> @google/gemini-cli
+
+<span class="comment"># OpenAI Codex</span>
+<span class="cmd">npm</span> install <span class="flag">-g</span> @openai/codex</code></pre>
+      <p>Authenticate each one by running the command (<code class="inline">claude</code>, <code class="inline">gemini</code>, or <code class="inline">codex</code>) and following the browser prompts.</p>
+      <div class="tip">
+        <strong>Browser links work!</strong> When a CLI says "open this URL to authenticate," it will automatically open your Windows browser even though you're inside WSL2.
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== PHASE 4: WORKING WITH FILES ======================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">4</span>
+      <h2>Working with Files</h2>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Access</span>
+      <h3>Access your Windows files from WSL2</h3>
+      <p>Your Windows drives are automatically mounted under <code class="inline">/mnt/</code>:</p>
+      <pre><code><span class="comment"># Your Windows home folder</span>
+<span class="cmd">cd</span> /mnt/c/Users/<span class="string">YourWindowsUsername</span>
+
+<span class="comment"># Desktop</span>
+<span class="cmd">cd</span> /mnt/c/Users/<span class="string">YourWindowsUsername</span>/Desktop
+
+<span class="comment"># A project on your D: drive</span>
+<span class="cmd">cd</span> /mnt/d/projects/my-project</code></pre>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Performance</span>
+      <h3>Where to keep your projects</h3>
+      <p>For best performance, keep project files inside the WSL2 filesystem rather than on your Windows drives:</p>
+      <pre><code><span class="comment"># Create a projects folder in your WSL home (fast)</span>
+<span class="cmd">mkdir</span> ~/repos
+<span class="cmd">cd</span> ~/repos
+<span class="cmd">git</span> clone git@github.com:<span class="string">username/repo</span>.git
+
+<span class="comment"># AVOID working in /mnt/c/ for large projects (slow)</span></code></pre>
+      <div class="danger">
+        <strong>Why?</strong> Reading and writing files across the Windows &harr; WSL boundary is significantly slower than working within the WSL filesystem. For small scripts it won't matter, but for projects with many files (like node_modules) the difference is huge.
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Explorer</span>
+      <h3>Open WSL files in Windows</h3>
+      <p>You can browse your WSL files from Windows Explorer:</p>
+      <pre><code><span class="comment"># From inside WSL, open the current folder in Windows Explorer</span>
+<span class="cmd">explorer.exe</span> .
+
+<span class="comment"># Or type this in Windows Explorer's address bar:</span>
+<span class="comment"># \\wsl$\Ubuntu\home\yourname\repos</span></code></pre>
+    </div>
+  </div>
+
+  <!-- ======================== CHEAT SHEET ======================== -->
+  <div class="cheat">
+    <h2>WSL2 Quick Reference</h2>
+    <pre><code><span class="comment"># Open WSL from PowerShell</span>
+<span class="cmd">wsl</span>
+
+<span class="comment"># Open WSL in the current Windows directory</span>
+<span class="cmd">wsl</span> <span class="flag">--cd</span> .
+
+<span class="comment"># Open Windows Explorer from inside WSL</span>
+<span class="cmd">explorer.exe</span> .
+
+<span class="comment"># Run a single Linux command from PowerShell</span>
+<span class="cmd">wsl</span> ls -la
+
+<span class="comment"># Check which distros are installed</span>
+<span class="cmd">wsl</span> <span class="flag">--list --verbose</span>
+
+<span class="comment"># Shut down WSL (frees RAM)</span>
+<span class="cmd">wsl</span> <span class="flag">--shutdown</span>
+
+<span class="comment"># Check WSL version</span>
+<span class="cmd">wsl</span> <span class="flag">--version</span>
+
+<span class="comment"># Open a specific distro</span>
+<span class="cmd">wsl</span> <span class="flag">-d</span> Ubuntu</code></pre>
+  </div>
+
+  <!-- ======================== TROUBLESHOOTING ======================== -->
+  <div class="troubleshoot">
+    <h2>Troubleshooting</h2>
+
+    <div class="issue">
+      <div class="issue-title">"WSL 2 requires an update to its kernel component"</div>
+      <div class="issue-fix">
+        Download and install the WSL2 kernel update from <a href="https://aka.ms/wsl2kernel">aka.ms/wsl2kernel</a>, then restart.
+      </div>
+    </div>
+
+    <div class="issue">
+      <div class="issue-title">"Please enable the Virtual Machine Platform Windows feature"</div>
+      <div class="issue-fix">
+        Virtualization needs to be enabled. Run in admin PowerShell:
+        <pre><code><span class="cmd">dism.exe</span> /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart</code></pre>
+        Then restart your computer. If it still doesn't work, you may need to enable virtualization (VT-x or AMD-V) in your BIOS settings.
+      </div>
+    </div>
+
+    <div class="issue">
+      <div class="issue-title">WSL is very slow when accessing /mnt/c/ files</div>
+      <div class="issue-fix">
+        This is expected — cross-filesystem I/O is slow by design. Move your projects into the WSL filesystem (<code class="inline">~/repos/</code>) for much better performance. Only use <code class="inline">/mnt/c/</code> when you need to access files that must stay on Windows.
+      </div>
+    </div>
+
+    <div class="issue">
+      <div class="issue-title">Git/SSH keys from Windows don't work in WSL2</div>
+      <div class="issue-fix">
+        WSL2 has its own filesystem — your Windows <code class="inline">C:\Users\You\.ssh</code> keys aren't automatically available inside WSL. You need to either generate new keys inside WSL (recommended) or copy them:
+        <pre><code><span class="cmd">cp</span> /mnt/c/Users/<span class="string">YourName</span>/.ssh/id_ed25519* ~/.ssh/
+<span class="cmd">chmod</span> 600 ~/.ssh/id_ed25519
+<span class="cmd">chmod</span> 644 ~/.ssh/id_ed25519.pub</code></pre>
+      </div>
+    </div>
+
+    <div class="issue">
+      <div class="issue-title">"npm WARN EBADPLATFORM" or packages won't install</div>
+      <div class="issue-fix">
+        If you installed Node.js via the Windows installer, it won't work inside WSL. Install Node.js separately inside WSL using nvm (see Phase 2 above). Windows and WSL have completely separate software installations.
+      </div>
+    </div>
+
+    <div class="issue">
+      <div class="issue-title">WSL is using too much RAM</div>
+      <div class="issue-fix">
+        WSL2 can be greedy with memory. Create a <code class="inline">.wslconfig</code> file in your Windows home folder to set limits:
+        <pre><code><span class="comment"># Create from PowerShell:</span>
+<span class="cmd">notepad</span> $env:USERPROFILE\.wslconfig</code></pre>
+        Add these contents and save:
+        <pre><code>[wsl2]
+memory=4GB
+processors=2</code></pre>
+        Then restart WSL: <code class="inline">wsl --shutdown</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    FF Office Hours &mdash; WSL2 Setup Guide &mdash; April 2026
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -337,10 +337,10 @@
   <div class="prereqs">
     <h2>Before You Start</h2>
     <ul>
-      <li><strong>A GitHub account</strong> &mdash; Free to create at <a href="https://github.com/signup">github.com/signup</a>. You'll need this for hosting code and version control.</li>
-      <li><strong>Git installed &amp; configured</strong> &mdash; Follow our <a href="git-setup.html"><strong>Git Setup Guide</strong></a> to install Git, set up SSH keys, and configure your identity.</li>
+      <li><strong>Sign up for GitHub</strong> &mdash; Free at <a href="https://github.com/signup">github.com/signup</a>. You'll need this for hosting code and version control.</li>
+      <li><strong>Git installed &amp; configured</strong> &mdash; See our <a href="git-setup.html"><strong>Git Setup Guide</strong></a> for reference. We'll walk through this together during office hours.</li>
       <li><strong>A terminal app</strong> &mdash; Mac: Terminal or iTerm2 &nbsp;|&nbsp; Windows: PowerShell or CMD</li>
-      <li><strong>Node.js 20+</strong> &mdash; Required for Gemini CLI &amp; Codex. Download at <a href="https://nodejs.org">nodejs.org</a></li>
+      <li><strong>Windows users: Consider WSL2</strong> &mdash; Optional but recommended if you plan to run Python scripts, use Docker, or prefer a Linux environment. See our <a href="wsl2-setup.html"><strong>WSL2 Setup Guide</strong></a> to decide if it's right for you.</li>
       <li><strong>Accounts</strong> &mdash; Claude (Pro/Max), Google account (Gemini), ChatGPT Plus/Pro (Codex)</li>
     </ul>
   </div>
@@ -558,6 +558,32 @@
     <!-- Step 1 -->
     <div class="step codex-step">
       <span class="step-number">Step 1</span>
+      <h3>Install Node.js (if you don't have it)</h3>
+      <p>Codex CLI requires Node.js 20 or later. Skip this if you already installed it for Gemini CLI.</p>
+
+      <div class="os-tabs" data-group="codex-node">
+        <button class="os-btn active" onclick="showOS(this, 'mac')">macOS</button>
+        <button class="os-btn" onclick="showOS(this, 'win')">Windows</button>
+      </div>
+
+      <div class="os-content active" data-os="mac" data-group="codex-node">
+        <pre><code><span class="comment"># Using Homebrew</span>
+<span class="cmd">brew</span> install node
+
+<span class="comment"># Or download from nodejs.org</span></code></pre>
+      </div>
+      <div class="os-content" data-os="win" data-group="codex-node">
+        <pre><code><span class="comment"># Download the Windows installer from https://nodejs.org</span>
+<span class="comment"># Or use winget:</span>
+<span class="cmd">winget</span> install OpenJS.NodeJS.LTS</code></pre>
+      </div>
+
+      <p>Verify with: <code>node --version</code> (should show v20+)</p>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step codex-step">
+      <span class="step-number">Step 2</span>
       <h3>Install Codex CLI</h3>
       <p>Pick your preferred installation method:</p>
 
@@ -574,9 +600,9 @@
       </div>
     </div>
 
-    <!-- Step 2 -->
+    <!-- Step 3 -->
     <div class="step codex-step">
-      <span class="step-number">Step 2</span>
+      <span class="step-number">Step 3</span>
       <h3>Authenticate</h3>
       <p>Run <code>codex</code> and select <strong>"Sign in with ChatGPT"</strong> when prompted. Your browser will open for login.</p>
       <pre><code><span class="cmd">codex</span>
@@ -586,9 +612,9 @@
       </div>
     </div>
 
-    <!-- Step 3 -->
+    <!-- Step 4 -->
     <div class="step codex-step">
-      <span class="step-number">Step 3</span>
+      <span class="step-number">Step 4</span>
       <h3>Start Using It</h3>
       <p>Navigate to a project folder and launch:</p>
       <pre><code><span class="cmd">cd</span> my-project
