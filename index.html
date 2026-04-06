@@ -100,7 +100,6 @@
   .tab-btn[data-tool="claude"].active { border-bottom-color: var(--accent-claude); }
   .tab-btn[data-tool="gemini"].active { border-bottom-color: var(--accent-gemini); }
   .tab-btn[data-tool="codex"].active { border-bottom-color: var(--accent-codex); }
-  .tab-btn[data-tool="wsl2"].active { border-bottom-color: #f0883e; }
 
   .tool-section { display: none; }
   .tool-section.active { display: block; }
@@ -126,10 +125,6 @@
   .badge-claude { background: #d4a27f30; color: var(--accent-claude); }
   .badge-gemini { background: #8ab4f830; color: var(--accent-gemini); }
   .badge-codex { background: #7ee8a830; color: var(--accent-codex); }
-  .badge-wsl { background: #f0883e30; color: #f0883e; }
-
-  .wsl-step .step-number { background: #f0883e; color: #1a1d27; }
-
   .tool-header h2 { font-size: 1.5rem; font-weight: 700; }
 
   /* Info rows */
@@ -350,7 +345,6 @@
     <button class="tab-btn active" data-tool="claude" onclick="showTool('claude')">Claude Code</button>
     <button class="tab-btn" data-tool="gemini" onclick="showTool('gemini')">Gemini CLI</button>
     <button class="tab-btn" data-tool="codex" onclick="showTool('codex')">OpenAI Codex</button>
-    <button class="tab-btn" data-tool="wsl2" onclick="showTool('wsl2')">WSL2 Setup</button>
   </div>
 
   <!-- ======================== CLAUDE CODE ======================== -->
@@ -620,134 +614,6 @@
       <pre><code><span class="cmd">cd</span> my-project
 <span class="cmd">codex</span>
 <span class="comment"># Then type: "Explain this repo"</span></code></pre>
-    </div>
-  </div>
-
-  <!-- ======================== WSL2 SETUP ======================== -->
-  <div class="tool-section" id="wsl2">
-    <div class="tool-header">
-      <span class="tool-badge badge-wsl">Windows</span>
-      <h2>WSL2 Setup (Optional)</h2>
-    </div>
-
-    <div class="info-grid">
-      <div class="info-card">
-        <div class="label">What is it</div>
-        <div class="value">Full Linux inside Windows</div>
-      </div>
-      <div class="info-card">
-        <div class="label">Requires</div>
-        <div class="value">Windows 10 (1903+) or 11</div>
-      </div>
-      <div class="info-card">
-        <div class="label">Best for</div>
-        <div class="value">Python-heavy workflows, Docker, bash scripts</div>
-      </div>
-      <div class="info-card">
-        <div class="label">Skip if</div>
-        <div class="value">You just want to try the AI CLIs quickly</div>
-      </div>
-    </div>
-
-    <div class="warning" style="margin-bottom: 1.5rem;">
-      <strong>Do you need this?</strong> All three AI CLIs work natively on Windows with PowerShell. WSL2 is for Windows users who want a Linux environment &mdash; useful if you're running Python trading scripts, using Docker, or working with repos that assume bash. If you just want to try the tools, skip this and use the native Windows instructions.
-    </div>
-
-    <!-- Step 1: Install WSL2 -->
-    <div class="step wsl-step">
-      <span class="step-number">Step 1</span>
-      <h3>Install WSL2</h3>
-      <p>Open <strong>PowerShell as Administrator</strong> (right-click &rarr; "Run as administrator") and run:</p>
-      <pre><code><span class="cmd">wsl</span> <span class="flag">--install</span></code></pre>
-      <p>This installs WSL2 with Ubuntu by default. <strong>Restart your computer</strong> when prompted.</p>
-      <div class="tip">
-        <strong>Tip:</strong> If you get an error, make sure virtualization is enabled in your BIOS. Most modern machines have it on by default.
-      </div>
-    </div>
-
-    <!-- Step 2: First launch -->
-    <div class="step wsl-step">
-      <span class="step-number">Step 2</span>
-      <h3>Set Up Ubuntu</h3>
-      <p>After restart, Ubuntu will launch automatically (or search "Ubuntu" in Start). Create a username and password when prompted.</p>
-      <pre><code><span class="comment"># You'll see something like:</span>
-Enter new UNIX username: <span class="string">yourname</span>
-New password: <span class="string">********</span></code></pre>
-      <p>Then update packages:</p>
-      <pre><code><span class="cmd">sudo</span> apt update && <span class="cmd">sudo</span> apt upgrade <span class="flag">-y</span></code></pre>
-    </div>
-
-    <!-- Step 3: Install Node.js -->
-    <div class="step wsl-step">
-      <span class="step-number">Step 3</span>
-      <h3>Install Node.js (for Gemini &amp; Codex)</h3>
-      <p>Use nvm to install Node.js &mdash; this avoids permission issues:</p>
-      <pre><code><span class="comment"># Install nvm</span>
-<span class="cmd">curl</span> <span class="flag">-o-</span> https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | <span class="cmd">bash</span>
-
-<span class="comment"># Reload shell</span>
-<span class="cmd">source</span> ~/.bashrc
-
-<span class="comment"># Install latest LTS Node</span>
-<span class="cmd">nvm</span> install <span class="flag">--lts</span>
-
-<span class="comment"># Verify</span>
-<span class="cmd">node</span> <span class="flag">--version</span>   <span class="comment"># Should show v20+</span></code></pre>
-    </div>
-
-    <!-- Step 4: Install the AI CLIs -->
-    <div class="step wsl-step">
-      <span class="step-number">Step 4</span>
-      <h3>Install the AI CLIs</h3>
-      <p>Inside your WSL2 terminal, all three tools use their Linux install commands:</p>
-      <pre><code><span class="comment"># Claude Code (native binary, no Node needed)</span>
-<span class="cmd">curl</span> <span class="flag">-fsSL</span> https://claude.ai/install.sh | <span class="cmd">bash</span>
-
-<span class="comment"># Gemini CLI</span>
-<span class="cmd">npm</span> install <span class="flag">-g</span> @google/gemini-cli
-
-<span class="comment"># OpenAI Codex</span>
-<span class="cmd">npm</span> install <span class="flag">-g</span> @openai/codex</code></pre>
-      <p>Then authenticate each one the same way as the other tabs describe &mdash; run the command and follow the browser prompts.</p>
-    </div>
-
-    <!-- Step 5: Access Windows files -->
-    <div class="step wsl-step">
-      <span class="step-number">Step 5</span>
-      <h3>Access Your Windows Files</h3>
-      <p>Your Windows drives are mounted under <code>/mnt/</code>:</p>
-      <pre><code><span class="comment"># Your Windows home folder</span>
-<span class="cmd">cd</span> /mnt/c/Users/<span class="string">YourName</span>
-
-<span class="comment"># Desktop</span>
-<span class="cmd">cd</span> /mnt/c/Users/<span class="string">YourName</span>/Desktop
-
-<span class="comment"># A project on your D: drive</span>
-<span class="cmd">cd</span> /mnt/d/projects/my-trading-bot</code></pre>
-      <div class="tip">
-        <strong>Tip:</strong> For best performance, keep project files inside the WSL filesystem (<code>~/projects/</code>) rather than on <code>/mnt/c/</code>. Cross-filesystem I/O is slower.
-      </div>
-    </div>
-
-    <!-- Step 6: Quick reference -->
-    <div class="step wsl-step">
-      <span class="step-number">Step 6</span>
-      <h3>Quick Reference</h3>
-      <p>Handy commands for working with WSL2 day-to-day:</p>
-      <pre><code><span class="comment"># Open WSL from PowerShell</span>
-<span class="cmd">wsl</span>
-
-<span class="comment"># Open current Windows folder in WSL</span>
-<span class="cmd">wsl</span> <span class="flag">--cd</span> .
-
-<span class="comment"># Open Windows Explorer from inside WSL</span>
-<span class="cmd">explorer.exe</span> .
-
-<span class="comment"># Check your WSL version</span>
-<span class="cmd">wsl</span> <span class="flag">--list --verbose</span>
-
-<span class="comment"># Shut down WSL (frees RAM)</span>
-<span class="cmd">wsl</span> <span class="flag">--shutdown</span></code></pre>
     </div>
   </div>
 
