@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI CLI Setup Guide — FF Office Hours</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --border: #2a2d3a;
+    --text: #e0e0e6;
+    --muted: #8b8fa3;
+    --accent-claude: #d4a27f;
+    --accent-gemini: #8ab4f8;
+    --accent-codex: #7ee8a8;
+    --code-bg: #141620;
+    --highlight: #ffffff10;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 2rem 1rem;
+  }
+
+  .container { max-width: 860px; margin: 0 auto; }
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.3rem;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  /* Prerequisites banner */
+  .prereqs {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .prereqs h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    color: #fff;
+  }
+
+  .prereqs ul { list-style: none; }
+
+  .prereqs li {
+    padding: 0.35rem 0;
+    color: var(--muted);
+  }
+
+  .prereqs li::before {
+    content: "→ ";
+    color: var(--accent-gemini);
+  }
+
+  .prereqs li strong { color: var(--text); }
+
+  /* Tab navigation */
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1rem;
+    padding: 0.7rem 1.4rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: #fff; border-bottom-color: var(--accent-claude); }
+  .tab-btn[data-tool="claude"].active { border-bottom-color: var(--accent-claude); }
+  .tab-btn[data-tool="gemini"].active { border-bottom-color: var(--accent-gemini); }
+  .tab-btn[data-tool="codex"].active { border-bottom-color: var(--accent-codex); }
+  .tab-btn[data-tool="wsl2"].active { border-bottom-color: #f0883e; }
+
+  .tool-section { display: none; }
+  .tool-section.active { display: block; }
+
+  /* Tool header */
+  .tool-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .tool-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.25rem 0.7rem;
+    border-radius: 6px;
+  }
+
+  .badge-claude { background: #d4a27f30; color: var(--accent-claude); }
+  .badge-gemini { background: #8ab4f830; color: var(--accent-gemini); }
+  .badge-codex { background: #7ee8a830; color: var(--accent-codex); }
+  .badge-wsl { background: #f0883e30; color: #f0883e; }
+
+  .wsl-step .step-number { background: #f0883e; color: #1a1d27; }
+
+  .tool-header h2 { font-size: 1.5rem; font-weight: 700; }
+
+  /* Info rows */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+  }
+
+  .info-card .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+
+  .info-card .value {
+    font-size: 0.95rem;
+    color: #fff;
+  }
+
+  /* Steps */
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.2rem;
+    position: relative;
+  }
+
+  .step-number {
+    position: absolute;
+    top: -0.6rem;
+    left: 1.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.15rem 0.6rem;
+    border-radius: 4px;
+  }
+
+  .claude-step .step-number { background: var(--accent-claude); color: #1a1d27; }
+  .gemini-step .step-number { background: var(--accent-gemini); color: #1a1d27; }
+  .codex-step .step-number { background: var(--accent-codex); color: #1a1d27; }
+
+  .step h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.6rem;
+    margin-top: 0.3rem;
+  }
+
+  .step p { color: var(--muted); font-size: 0.9rem; margin-bottom: 0.8rem; }
+
+  /* OS toggle inside steps */
+  .os-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0.8rem;
+    background: var(--code-bg);
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-bottom: none;
+  }
+
+  .os-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 0.8rem;
+    padding: 0.5rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+
+  .os-btn:hover { color: var(--text); background: #ffffff08; }
+  .os-btn.active { color: #fff; background: #ffffff12; }
+
+  .os-content { display: none; }
+  .os-content.active { display: block; }
+
+  /* Code blocks */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    overflow-x: auto;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    position: relative;
+  }
+
+  .os-tabs + .os-content.active pre {
+    border-radius: 0 0 8px 8px;
+    border-top: none;
+  }
+
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    color: #c9d1d9;
+  }
+
+  .cmd { color: var(--accent-gemini); }
+  .flag { color: var(--accent-codex); }
+  .comment { color: #6a737d; }
+  .string { color: var(--accent-claude); }
+
+  /* Tip callouts */
+  .tip {
+    background: #8ab4f810;
+    border-left: 3px solid var(--accent-gemini);
+    padding: 0.8rem 1.2rem;
+    border-radius: 0 8px 8px 0;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .tip strong { color: var(--accent-gemini); }
+
+  .warning {
+    background: #f8c28a10;
+    border-left: 3px solid var(--accent-claude);
+    padding: 0.8rem 1.2rem;
+    border-radius: 0 8px 8px 0;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .warning strong { color: var(--accent-claude); }
+
+  /* Comparison table */
+  .comparison {
+    margin-top: 2.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .comparison h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  th {
+    text-align: left;
+    padding: 0.9rem 1.2rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  a { color: var(--accent-gemini); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>AI CLI Setup Guide</h1>
+  <p class="subtitle">FF Office Hours &mdash; Get up and running with Claude Code, Gemini CLI &amp; Codex</p>
+
+  <!-- Prerequisites -->
+  <div class="prereqs">
+    <h2>Before You Start</h2>
+    <ul>
+      <li><strong>A terminal app</strong> &mdash; Mac: Terminal or iTerm2 &nbsp;|&nbsp; Windows: PowerShell or CMD</li>
+      <li><strong>Node.js 20+</strong> &mdash; Required for Gemini CLI &amp; Codex. Download at <a href="https://nodejs.org">nodejs.org</a></li>
+      <li><strong>Git for Windows</strong> &mdash; Windows users need this for Claude Code. Get it at <a href="https://git-scm.com/downloads/win">git-scm.com</a></li>
+      <li><strong>Accounts</strong> &mdash; Claude (Pro/Max), Google account (Gemini), ChatGPT Plus/Pro (Codex)</li>
+    </ul>
+  </div>
+
+  <!-- Tool Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tool="claude" onclick="showTool('claude')">Claude Code</button>
+    <button class="tab-btn" data-tool="gemini" onclick="showTool('gemini')">Gemini CLI</button>
+    <button class="tab-btn" data-tool="codex" onclick="showTool('codex')">OpenAI Codex</button>
+    <button class="tab-btn" data-tool="wsl2" onclick="showTool('wsl2')">WSL2 Setup</button>
+  </div>
+
+  <!-- ======================== CLAUDE CODE ======================== -->
+  <div class="tool-section active" id="claude">
+    <div class="tool-header">
+      <span class="tool-badge badge-claude">Anthropic</span>
+      <h2>Claude Code</h2>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label">Requires</div>
+        <div class="value">No dependencies (native binary)</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Account</div>
+        <div class="value">Claude Pro, Max, Team, or Enterprise</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Auto-updates</div>
+        <div class="value">Yes (native install)</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Platforms</div>
+        <div class="value">macOS, Windows, Linux</div>
+      </div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="step claude-step">
+      <span class="step-number">Step 1</span>
+      <h3>Install Claude Code</h3>
+      <p>Run the installer for your OS. No Node.js needed &mdash; this is a native binary.</p>
+
+      <div class="os-tabs" data-group="claude-install">
+        <button class="os-btn active" onclick="showOS(this, 'mac')">macOS</button>
+        <button class="os-btn" onclick="showOS(this, 'win-ps')">Windows PowerShell</button>
+        <button class="os-btn" onclick="showOS(this, 'win-cmd')">Windows CMD</button>
+      </div>
+
+      <div class="os-content active" data-os="mac" data-group="claude-install">
+        <pre><code><span class="cmd">curl</span> <span class="flag">-fsSL</span> https://claude.ai/install.sh | <span class="cmd">bash</span></code></pre>
+      </div>
+      <div class="os-content" data-os="win-ps" data-group="claude-install">
+        <pre><code><span class="cmd">irm</span> https://claude.ai/install.ps1 | <span class="cmd">iex</span></code></pre>
+      </div>
+      <div class="os-content" data-os="win-cmd" data-group="claude-install">
+        <pre><code><span class="cmd">curl</span> <span class="flag">-fsSL</span> https://claude.ai/install.cmd <span class="flag">-o</span> install.cmd && install.cmd && del install.cmd</code></pre>
+      </div>
+
+      <div class="warning">
+        <strong>Windows users:</strong> Install <a href="https://git-scm.com/downloads/win">Git for Windows</a> first. If your prompt shows <code>PS C:\</code>, you're in PowerShell &mdash; use the PowerShell command.
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step claude-step">
+      <span class="step-number">Step 2</span>
+      <h3>Verify Installation</h3>
+      <p>Open a <strong>new</strong> terminal window, then check the version:</p>
+      <pre><code><span class="cmd">claude</span> <span class="flag">--version</span></code></pre>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step claude-step">
+      <span class="step-number">Step 3</span>
+      <h3>Authenticate</h3>
+      <p>Run <code>claude</code> and your browser will open for you to sign in with your Anthropic account.</p>
+      <pre><code><span class="cmd">claude</span></code></pre>
+      <div class="tip">
+        <strong>Tip:</strong> You can also run <code>claude doctor</code> to check that everything is configured correctly.
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step claude-step">
+      <span class="step-number">Step 4</span>
+      <h3>Start Using It</h3>
+      <p>Navigate to any project folder and run <code>claude</code> to start a conversation. Try something like:</p>
+      <pre><code><span class="cmd">cd</span> my-project
+<span class="cmd">claude</span>
+<span class="comment"># Then type: "Explain this codebase to me"</span></code></pre>
+    </div>
+  </div>
+
+  <!-- ======================== GEMINI CLI ======================== -->
+  <div class="tool-section" id="gemini">
+    <div class="tool-header">
+      <span class="tool-badge badge-gemini">Google</span>
+      <h2>Gemini CLI</h2>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label">Requires</div>
+        <div class="value">Node.js 20+</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Account</div>
+        <div class="value">Free with Google account</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Free Tier</div>
+        <div class="value">60 req/min, 1,000 req/day</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Platforms</div>
+        <div class="value">macOS, Windows, Linux</div>
+      </div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="step gemini-step">
+      <span class="step-number">Step 1</span>
+      <h3>Install Node.js (if you don't have it)</h3>
+      <p>Gemini CLI requires Node.js 20 or later.</p>
+
+      <div class="os-tabs" data-group="gemini-node">
+        <button class="os-btn active" onclick="showOS(this, 'mac')">macOS</button>
+        <button class="os-btn" onclick="showOS(this, 'win')">Windows</button>
+      </div>
+
+      <div class="os-content active" data-os="mac" data-group="gemini-node">
+        <pre><code><span class="comment"># Using Homebrew</span>
+<span class="cmd">brew</span> install node
+
+<span class="comment"># Or download from nodejs.org</span></code></pre>
+      </div>
+      <div class="os-content" data-os="win" data-group="gemini-node">
+        <pre><code><span class="comment"># Download the Windows installer from https://nodejs.org</span>
+<span class="comment"># Or use winget:</span>
+<span class="cmd">winget</span> install OpenJS.NodeJS.LTS</code></pre>
+      </div>
+
+      <p>Verify with: <code>node --version</code> (should show v20+)</p>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step gemini-step">
+      <span class="step-number">Step 2</span>
+      <h3>Install Gemini CLI</h3>
+
+      <div class="os-tabs" data-group="gemini-install">
+        <button class="os-btn active" onclick="showOS(this, 'npm')">npm (all platforms)</button>
+        <button class="os-btn" onclick="showOS(this, 'brew')">Homebrew (macOS)</button>
+      </div>
+
+      <div class="os-content active" data-os="npm" data-group="gemini-install">
+        <pre><code><span class="cmd">npm</span> install <span class="flag">-g</span> @google/gemini-cli</code></pre>
+      </div>
+      <div class="os-content" data-os="brew" data-group="gemini-install">
+        <pre><code><span class="cmd">brew</span> install gemini-cli</code></pre>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step gemini-step">
+      <span class="step-number">Step 3</span>
+      <h3>Authenticate</h3>
+      <p>Run <code>gemini</code> for the first time. When prompted, select <strong>"Sign in with Google"</strong>. Your browser will open for OAuth.</p>
+      <pre><code><span class="cmd">gemini</span>
+<span class="comment"># Select: 1. Sign in with Google</span></code></pre>
+      <div class="tip">
+        <strong>Tip:</strong> This gives you the best free tier limits (60 req/min, 1,000 req/day). No credit card needed.
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step gemini-step">
+      <span class="step-number">Step 4</span>
+      <h3>Start Using It</h3>
+      <p>Navigate to a project folder and start a session:</p>
+      <pre><code><span class="cmd">cd</span> my-project
+<span class="cmd">gemini</span>
+<span class="comment"># Then type: "What does this project do?"</span></code></pre>
+    </div>
+  </div>
+
+  <!-- ======================== CODEX CLI ======================== -->
+  <div class="tool-section" id="codex">
+    <div class="tool-header">
+      <span class="tool-badge badge-codex">OpenAI</span>
+      <h2>OpenAI Codex CLI</h2>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label">Requires</div>
+        <div class="value">Node.js 20+ (npm) or standalone binary</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Account</div>
+        <div class="value">ChatGPT Plus, Pro, Team, or Enterprise</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Built With</div>
+        <div class="value">Rust (fast startup)</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Platforms</div>
+        <div class="value">macOS, Windows, Linux</div>
+      </div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="step codex-step">
+      <span class="step-number">Step 1</span>
+      <h3>Install Codex CLI</h3>
+      <p>Pick your preferred installation method:</p>
+
+      <div class="os-tabs" data-group="codex-install">
+        <button class="os-btn active" onclick="showOS(this, 'npm')">npm (all platforms)</button>
+        <button class="os-btn" onclick="showOS(this, 'brew')">Homebrew (macOS)</button>
+      </div>
+
+      <div class="os-content active" data-os="npm" data-group="codex-install">
+        <pre><code><span class="cmd">npm</span> install <span class="flag">-g</span> @openai/codex</code></pre>
+      </div>
+      <div class="os-content" data-os="brew" data-group="codex-install">
+        <pre><code><span class="cmd">brew</span> install <span class="flag">--cask</span> codex</code></pre>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step codex-step">
+      <span class="step-number">Step 2</span>
+      <h3>Authenticate</h3>
+      <p>Run <code>codex</code> and select <strong>"Sign in with ChatGPT"</strong> when prompted. Your browser will open for login.</p>
+      <pre><code><span class="cmd">codex</span>
+<span class="comment"># Select: Sign in with ChatGPT</span></code></pre>
+      <div class="tip">
+        <strong>Tip:</strong> API key auth is also available if you prefer &mdash; set <code>OPENAI_API_KEY</code> in your environment.
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step codex-step">
+      <span class="step-number">Step 3</span>
+      <h3>Start Using It</h3>
+      <p>Navigate to a project folder and launch:</p>
+      <pre><code><span class="cmd">cd</span> my-project
+<span class="cmd">codex</span>
+<span class="comment"># Then type: "Explain this repo"</span></code></pre>
+    </div>
+  </div>
+
+  <!-- ======================== WSL2 SETUP ======================== -->
+  <div class="tool-section" id="wsl2">
+    <div class="tool-header">
+      <span class="tool-badge badge-wsl">Windows</span>
+      <h2>WSL2 Setup (Optional)</h2>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label">What is it</div>
+        <div class="value">Full Linux inside Windows</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Requires</div>
+        <div class="value">Windows 10 (1903+) or 11</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Best for</div>
+        <div class="value">Python-heavy workflows, Docker, bash scripts</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Skip if</div>
+        <div class="value">You just want to try the AI CLIs quickly</div>
+      </div>
+    </div>
+
+    <div class="warning" style="margin-bottom: 1.5rem;">
+      <strong>Do you need this?</strong> All three AI CLIs work natively on Windows with PowerShell. WSL2 is for Windows users who want a Linux environment &mdash; useful if you're running Python trading scripts, using Docker, or working with repos that assume bash. If you just want to try the tools, skip this and use the native Windows instructions.
+    </div>
+
+    <!-- Step 1: Install WSL2 -->
+    <div class="step wsl-step">
+      <span class="step-number">Step 1</span>
+      <h3>Install WSL2</h3>
+      <p>Open <strong>PowerShell as Administrator</strong> (right-click &rarr; "Run as administrator") and run:</p>
+      <pre><code><span class="cmd">wsl</span> <span class="flag">--install</span></code></pre>
+      <p>This installs WSL2 with Ubuntu by default. <strong>Restart your computer</strong> when prompted.</p>
+      <div class="tip">
+        <strong>Tip:</strong> If you get an error, make sure virtualization is enabled in your BIOS. Most modern machines have it on by default.
+      </div>
+    </div>
+
+    <!-- Step 2: First launch -->
+    <div class="step wsl-step">
+      <span class="step-number">Step 2</span>
+      <h3>Set Up Ubuntu</h3>
+      <p>After restart, Ubuntu will launch automatically (or search "Ubuntu" in Start). Create a username and password when prompted.</p>
+      <pre><code><span class="comment"># You'll see something like:</span>
+Enter new UNIX username: <span class="string">yourname</span>
+New password: <span class="string">********</span></code></pre>
+      <p>Then update packages:</p>
+      <pre><code><span class="cmd">sudo</span> apt update && <span class="cmd">sudo</span> apt upgrade <span class="flag">-y</span></code></pre>
+    </div>
+
+    <!-- Step 3: Install Node.js -->
+    <div class="step wsl-step">
+      <span class="step-number">Step 3</span>
+      <h3>Install Node.js (for Gemini &amp; Codex)</h3>
+      <p>Use nvm to install Node.js &mdash; this avoids permission issues:</p>
+      <pre><code><span class="comment"># Install nvm</span>
+<span class="cmd">curl</span> <span class="flag">-o-</span> https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | <span class="cmd">bash</span>
+
+<span class="comment"># Reload shell</span>
+<span class="cmd">source</span> ~/.bashrc
+
+<span class="comment"># Install latest LTS Node</span>
+<span class="cmd">nvm</span> install <span class="flag">--lts</span>
+
+<span class="comment"># Verify</span>
+<span class="cmd">node</span> <span class="flag">--version</span>   <span class="comment"># Should show v20+</span></code></pre>
+    </div>
+
+    <!-- Step 4: Install the AI CLIs -->
+    <div class="step wsl-step">
+      <span class="step-number">Step 4</span>
+      <h3>Install the AI CLIs</h3>
+      <p>Inside your WSL2 terminal, all three tools use their Linux install commands:</p>
+      <pre><code><span class="comment"># Claude Code (native binary, no Node needed)</span>
+<span class="cmd">curl</span> <span class="flag">-fsSL</span> https://claude.ai/install.sh | <span class="cmd">bash</span>
+
+<span class="comment"># Gemini CLI</span>
+<span class="cmd">npm</span> install <span class="flag">-g</span> @google/gemini-cli
+
+<span class="comment"># OpenAI Codex</span>
+<span class="cmd">npm</span> install <span class="flag">-g</span> @openai/codex</code></pre>
+      <p>Then authenticate each one the same way as the other tabs describe &mdash; run the command and follow the browser prompts.</p>
+    </div>
+
+    <!-- Step 5: Access Windows files -->
+    <div class="step wsl-step">
+      <span class="step-number">Step 5</span>
+      <h3>Access Your Windows Files</h3>
+      <p>Your Windows drives are mounted under <code>/mnt/</code>:</p>
+      <pre><code><span class="comment"># Your Windows home folder</span>
+<span class="cmd">cd</span> /mnt/c/Users/<span class="string">YourName</span>
+
+<span class="comment"># Desktop</span>
+<span class="cmd">cd</span> /mnt/c/Users/<span class="string">YourName</span>/Desktop
+
+<span class="comment"># A project on your D: drive</span>
+<span class="cmd">cd</span> /mnt/d/projects/my-trading-bot</code></pre>
+      <div class="tip">
+        <strong>Tip:</strong> For best performance, keep project files inside the WSL filesystem (<code>~/projects/</code>) rather than on <code>/mnt/c/</code>. Cross-filesystem I/O is slower.
+      </div>
+    </div>
+
+    <!-- Step 6: Quick reference -->
+    <div class="step wsl-step">
+      <span class="step-number">Step 6</span>
+      <h3>Quick Reference</h3>
+      <p>Handy commands for working with WSL2 day-to-day:</p>
+      <pre><code><span class="comment"># Open WSL from PowerShell</span>
+<span class="cmd">wsl</span>
+
+<span class="comment"># Open current Windows folder in WSL</span>
+<span class="cmd">wsl</span> <span class="flag">--cd</span> .
+
+<span class="comment"># Open Windows Explorer from inside WSL</span>
+<span class="cmd">explorer.exe</span> .
+
+<span class="comment"># Check your WSL version</span>
+<span class="cmd">wsl</span> <span class="flag">--list --verbose</span>
+
+<span class="comment"># Shut down WSL (frees RAM)</span>
+<span class="cmd">wsl</span> <span class="flag">--shutdown</span></code></pre>
+    </div>
+  </div>
+
+  <!-- ======================== COMPARISON ======================== -->
+  <div class="comparison">
+    <h2>Quick Comparison</h2>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Claude Code</th>
+          <th>Gemini CLI</th>
+          <th>Codex CLI</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Cost</strong></td>
+          <td>Pro $20/mo or Max $100/mo</td>
+          <td>Free (Google account)</td>
+          <td>Plus $20/mo or Pro $200/mo</td>
+        </tr>
+        <tr>
+          <td><strong>Install</strong></td>
+          <td>Native binary (no deps)</td>
+          <td>npm (needs Node.js)</td>
+          <td>npm or Homebrew cask</td>
+        </tr>
+        <tr>
+          <td><strong>Auth</strong></td>
+          <td>Browser OAuth</td>
+          <td>Google OAuth</td>
+          <td>ChatGPT login or API key</td>
+        </tr>
+        <tr>
+          <td><strong>Auto-update</strong></td>
+          <td>Yes</td>
+          <td>No (manual npm update)</td>
+          <td>No (manual update)</td>
+        </tr>
+        <tr>
+          <td><strong>Windows</strong></td>
+          <td>PowerShell / CMD / WSL2</td>
+          <td>PowerShell / CMD / WSL2</td>
+          <td>PowerShell / CMD / WSL2</td>
+        </tr>
+        <tr>
+          <td><strong>Best for</strong></td>
+          <td>Deep codebase understanding</td>
+          <td>Free access, large context</td>
+          <td>Fast execution, OpenAI ecosystem</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ======================== TROUBLESHOOTING ======================== -->
+  <div class="prereqs" style="margin-top: 2rem;">
+    <h2>Common Issues</h2>
+    <ul>
+      <li><strong>"command not found"</strong> &mdash; Close and reopen your terminal after installing. The PATH needs to refresh.</li>
+      <li><strong>"permission denied" on Mac</strong> &mdash; Don't use <code>sudo</code>. If npm gives errors, fix npm permissions: <code>npm config set prefix ~/.npm-global</code></li>
+      <li><strong>Windows PowerShell won't run scripts</strong> &mdash; Run: <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code></li>
+      <li><strong>Node.js version too old</strong> &mdash; Check with <code>node --version</code>. Need 20+? Use <a href="https://github.com/nvm-sh/nvm">nvm</a> (Mac) or reinstall from <a href="https://nodejs.org">nodejs.org</a></li>
+      <li><strong>Claude Code says "not eligible"</strong> &mdash; Free Claude.ai accounts don't include Claude Code. You need Pro ($20/mo) or higher.</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    FF Office Hours &mdash; AI CLI Setup Guide &mdash; April 2026
+  </div>
+
+</div>
+
+<script>
+function showTool(tool) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tool-section').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.tab-btn[data-tool="${tool}"]`).classList.add('active');
+  document.getElementById(tool).classList.add('active');
+}
+
+function showOS(btn, os) {
+  const group = btn.closest('.step');
+  const tabGroup = btn.parentElement.dataset.group;
+  group.querySelectorAll(`.os-tabs[data-group="${tabGroup}"] .os-btn`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  group.querySelectorAll(`.os-content[data-group="${tabGroup}"]`).forEach(c => c.classList.remove('active'));
+  group.querySelector(`.os-content[data-os="${os}"][data-group="${tabGroup}"]`).classList.add('active');
+}
+</script>
+
+</body>
+</html>
