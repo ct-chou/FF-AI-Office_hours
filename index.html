@@ -498,6 +498,13 @@
       <div class="os-content" data-os="brew" data-group="gemini-install">
         <pre><code><span class="cmd">brew</span> install gemini-cli</code></pre>
       </div>
+
+      <div class="warning" style="margin-top: 1rem;">
+        <strong>Windows: <code>npm</code> blocked by execution policy?</strong>
+        <p>If you see <code>npm.ps1 cannot be loaded because running scripts is disabled on this system</code> (a <code>UnauthorizedAccess</code> / <code>PSSecurityException</code> error), Node is installed fine &mdash; PowerShell just won't run npm's script wrapper yet. Open <strong>PowerShell as Administrator</strong> and run:</p>
+        <pre><code><span class="cmd">Set-ExecutionPolicy</span> <span class="flag">-Scope</span> CurrentUser <span class="flag">-ExecutionPolicy</span> RemoteSigned</code></pre>
+        <p>Type <code>Y</code> and press Enter when prompted. This allows locally-created scripts to run without signing, while still requiring signatures on scripts downloaded from the internet (a safe default). Then re-run <code>npm --version</code> to confirm, and try the install again.</p>
+      </div>
     </div>
 
     <!-- Step 3 -->
