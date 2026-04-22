@@ -14,6 +14,9 @@
     --accent: #f0883e;
     --accent2: #8ab4f8;
     --accent3: #7ee8a8;
+    --accent-claude: #d4a27f;
+    --accent-gemini: #8ab4f8;
+    --accent-codex: #7ee8a8;
     --code-bg: #141620;
   }
 
@@ -208,6 +211,38 @@
   }
   .danger strong { color: #f85149; }
 
+  /* Tool tabs (Claude / Gemini / Codex picker) */
+  .tabs {
+    display: flex;
+    gap: 0.3rem;
+    margin-top: 0.8rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 0.95rem;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    font-weight: 500;
+    font-family: inherit;
+    margin-bottom: -1px;
+  }
+
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: #fff; }
+  .tab-btn[data-tool="claude"].active { border-bottom-color: var(--accent-claude); }
+  .tab-btn[data-tool="gemini"].active { border-bottom-color: var(--accent-gemini); }
+  .tab-btn[data-tool="codex"].active { border-bottom-color: var(--accent-codex); }
+
+  .tool-section { display: none; }
+  .tool-section.active { display: block; }
+
   /* Phase headers */
   .phase { margin-bottom: 2.5rem; }
 
@@ -347,12 +382,13 @@
     </div>
   </div>
 
-  <!-- ======================== PHASE 1: INSTALL WSL2 ======================== -->
+  <!-- ======================== PHASE 1: INSTALL WSL2 (PREREQ) ======================== -->
   <div class="phase">
     <div class="phase-header">
       <span class="phase-number">1</span>
-      <h2>Install WSL2</h2>
+      <h2>Install WSL2 &amp; Ubuntu</h2>
     </div>
+    <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1.2rem;">The prerequisite for everything else: a running Linux environment. We'll keep this phase minimal &mdash; just enough to get Ubuntu booting so we can install an AI CLI inside it.</p>
 
     <div class="step">
       <span class="step-label">Requirements</span>
@@ -365,9 +401,9 @@
       <h3>Run the WSL installer</h3>
       <p>Open <strong>PowerShell as Administrator</strong> (right-click the Start button &rarr; "Terminal (Admin)" or search for PowerShell and right-click &rarr; "Run as administrator"):</p>
       <pre><code><span class="cmd">wsl</span> <span class="flag">--install</span></code></pre>
-      <p>This installs WSL2 with Ubuntu as the default Linux distribution. <strong>Restart your computer</strong> when prompted.</p>
+      <p>This enables WSL2 and installs Ubuntu in one shot. <strong>Restart your computer</strong> when prompted.</p>
       <div class="tip">
-        <strong>Want a different distro?</strong> Run <code class="inline">wsl --list --online</code> to see available distros, then <code class="inline">wsl --install -d Debian</code> (or whichever you prefer). Ubuntu is the most beginner-friendly.
+        <strong>Want a different distro?</strong> Run <code class="inline">wsl --list --online</code> to see available distros, then <code class="inline">wsl --install -d Debian</code> (or whichever you prefer). Ubuntu is the most beginner-friendly and is assumed throughout the rest of this guide.
       </div>
     </div>
 
@@ -392,87 +428,136 @@ Retype new password: <span class="string">********</span></code></pre>
     </div>
   </div>
 
-  <!-- ======================== PHASE 2: SET UP DEV TOOLS ======================== -->
+  <!-- ======================== PHASE 2: INSTALL AN AI CLI ======================== -->
   <div class="phase">
     <div class="phase-header">
       <span class="phase-number">2</span>
-      <h2>Set Up Dev Tools</h2>
+      <h2>Install an AI CLI (pick at least one)</h2>
     </div>
+    <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1.2rem;">You need at least one AI CLI running inside WSL2 so Phase 3 can be automated. Pick whichever you have an account for &mdash; you can add the others later from Phase 3. All three can coexist.</p>
 
     <div class="step">
-      <span class="step-label">Node.js</span>
-      <h3>Install Node.js via nvm</h3>
-      <p>Gemini CLI and Codex require Node.js 20+. Using nvm (Node Version Manager) avoids permission issues and makes it easy to switch versions:</p>
-      <pre><code><span class="comment"># Install nvm</span>
+      <span class="step-label">Pick &amp; Install</span>
+      <h3>Choose your AI CLI</h3>
+      <p>Click a tab to see the install steps for that CLI. Claude Code has no dependencies; Gemini and Codex both need Node.js, which each tab includes.</p>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tool="claude" onclick="showTool('claude')">Claude Code</button>
+        <button class="tab-btn" data-tool="gemini" onclick="showTool('gemini')">Gemini CLI</button>
+        <button class="tab-btn" data-tool="codex" onclick="showTool('codex')">Codex CLI</button>
+      </div>
+
+      <!-- Claude Code tab -->
+      <div class="tool-section active" id="claude">
+        <p><strong>Account required:</strong> Claude Pro or Max ($20+/mo). Free Claude.ai accounts aren't eligible.</p>
+        <pre><code><span class="comment"># Install &mdash; native binary, no Node.js needed</span>
+<span class="cmd">curl</span> <span class="flag">-fsSL</span> https://claude.ai/install.sh | <span class="cmd">bash</span>
+
+<span class="comment"># Verify</span>
+<span class="cmd">claude</span> <span class="flag">--version</span>
+
+<span class="comment"># Authenticate (browser opens automatically)</span>
+<span class="cmd">claude</span></code></pre>
+      </div>
+
+      <!-- Gemini CLI tab -->
+      <div class="tool-section" id="gemini">
+        <p><strong>Account required:</strong> Google account (free tier gives you 60 req/min and 1,000 req/day).</p>
+        <pre><code><span class="comment"># 1. Install Node.js 20+ via nvm</span>
 <span class="cmd">curl</span> <span class="flag">-o-</span> https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | <span class="cmd">bash</span>
-
-<span class="comment"># Reload your shell (important!)</span>
 <span class="cmd">source</span> ~/.bashrc
-
-<span class="comment"># Install the latest LTS version of Node</span>
 <span class="cmd">nvm</span> install <span class="flag">--lts</span>
 
-<span class="comment"># Verify</span>
-<span class="cmd">node</span> <span class="flag">--version</span>   <span class="comment"># Should show v20+</span>
-<span class="cmd">npm</span> <span class="flag">--version</span></code></pre>
-    </div>
+<span class="comment"># 2. Install Gemini CLI</span>
+<span class="cmd">npm</span> install <span class="flag">-g</span> @google/gemini-cli
 
-    <div class="step">
-      <span class="step-label">Python</span>
-      <h3>Install Python</h3>
-      <p>Ubuntu comes with Python, but you may want to make sure you have the latest version and pip:</p>
-      <pre><code><span class="comment"># Install Python and pip</span>
-<span class="cmd">sudo</span> apt install python3 python3-pip python3-venv <span class="flag">-y</span>
-
-<span class="comment"># Verify</span>
-<span class="cmd">python3</span> <span class="flag">--version</span>
-<span class="cmd">pip3</span> <span class="flag">--version</span>
-
-<span class="comment"># Create an alias so "python" works (optional)</span>
-<span class="cmd">echo</span> <span class="string">'alias python=python3'</span> >> ~/.bashrc
-<span class="cmd">source</span> ~/.bashrc</code></pre>
-    </div>
-
-    <div class="step">
-      <span class="step-label">Git</span>
-      <h3>Configure Git in WSL2</h3>
-      <p>WSL2 has its own Git installation, separate from Windows. You need to configure it independently. See our <a href="git-setup.html"><strong>Git Setup Guide</strong></a> for full instructions, but the essentials are:</p>
-      <pre><code><span class="comment"># Set your identity (use your GitHub no-reply email!)</span>
-<span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="string">"Your Name"</span>
-<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="string">"ID+username@users.noreply.github.com"</span>
-
-<span class="comment"># Set defaults</span>
-<span class="cmd">git</span> config <span class="flag">--global</span> init.defaultBranch main
-<span class="cmd">git</span> config <span class="flag">--global</span> core.editor <span class="string">"nano"</span></code></pre>
-      <div class="warning">
-        <strong>SSH keys:</strong> You'll also need to set up SSH keys inside WSL2 — your Windows SSH keys are in a different location. Follow the SSH section in the <a href="git-setup.html">Git Setup Guide</a>, selecting the "Linux / WSL2" tab for each step.
+<span class="comment"># 3. Authenticate &mdash; select "Sign in with Google"</span>
+<span class="cmd">gemini</span></code></pre>
       </div>
+
+      <!-- Codex CLI tab -->
+      <div class="tool-section" id="codex">
+        <p><strong>Account required:</strong> ChatGPT Plus, Pro, Team, or Enterprise.</p>
+        <pre><code><span class="comment"># 1. Install Node.js 20+ via nvm (skip if already installed)</span>
+<span class="cmd">curl</span> <span class="flag">-o-</span> https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | <span class="cmd">bash</span>
+<span class="cmd">source</span> ~/.bashrc
+<span class="cmd">nvm</span> install <span class="flag">--lts</span>
+
+<span class="comment"># 2. Install Codex</span>
+<span class="cmd">npm</span> install <span class="flag">-g</span> @openai/codex
+
+<span class="comment"># 3. Authenticate &mdash; select "Sign in with ChatGPT"</span>
+<span class="cmd">codex</span></code></pre>
+        <div class="tip">
+          <strong>API key works too:</strong> set <code class="inline">OPENAI_API_KEY</code> in your environment if you'd rather use API billing instead of a ChatGPT subscription.
+        </div>
+      </div>
+    </div>
+
+    <div class="tip" style="margin-top: 1rem;">
+      <strong>Browser links work from WSL2!</strong> When any of these CLIs says "open this URL to authenticate," it will automatically open your Windows browser even though you're inside Linux.
     </div>
   </div>
 
-  <!-- ======================== PHASE 3: INSTALL AI CLIs ======================== -->
+  <!-- ======================== PHASE 3: USE THE AI CLI ======================== -->
   <div class="phase">
     <div class="phase-header">
       <span class="phase-number">3</span>
-      <h2>Install the AI CLIs</h2>
+      <h2>Use your AI CLI to finish setup</h2>
+    </div>
+    <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1.2rem;">Now that you have a working AI CLI, let it handle the rest: Python, Git config, the AI CLIs you haven't installed yet, and a PowerShell shortcut so you can launch Ubuntu by typing <code class="inline">ubuntu</code>. Works with Claude Code, Gemini CLI, or Codex &mdash; the prompt below is the same for all three.</p>
+
+    <div class="step">
+      <span class="step-label">Prompt</span>
+      <h3>Ask your CLI to set up your environment</h3>
+      <p>From your WSL2 terminal, launch whichever CLI you installed (<code class="inline">claude</code>, <code class="inline">gemini</code>, or <code class="inline">codex</code>) and paste something like this:</p>
+      <pre><code><span class="comment"># Example prompt:</span>
+I'm on a fresh WSL2 Ubuntu. Please set up my dev environment step
+by step, showing me each command before running it. First check
+what's already installed and skip anything that's there.
+
+1. Install Node.js 20+ via nvm (if not already installed)
+2. Install Python 3, pip, and venv via apt
+3. Install any of these AI CLIs that aren't already present:
+   Claude Code (curl https://claude.ai/install.sh | bash),
+   Gemini CLI (npm i -g @google/gemini-cli),
+   Codex (npm i -g @openai/codex)
+4. Configure git with my name and GitHub no-reply email (ask me for
+   these)
+5. Add a function to my Windows PowerShell <span class="string">$PROFILE</span> so typing
+   <span class="string">`ubuntu`</span> from any PowerShell prompt launches WSL Ubuntu. My
+   Windows username is <span class="string">&lt;YOURNAME&gt;</span>.</code></pre>
+      <div class="tip">
+        <strong>Why "show me each command before running it"?</strong> All three CLIs will ask permission for system-modifying commands by default, but being explicit keeps you in a review-and-approve flow &mdash; you see exactly what's being changed and learn the underlying commands as you go.
+      </div>
+      <div class="tip">
+        <strong>SSH keys for GitHub:</strong> Once the above finishes, ask your CLI to walk you through the "Linux / WSL2" SSH section of the <a href="git-setup.html">Git Setup Guide</a>. Your Windows SSH keys don't carry over &mdash; you need fresh ones inside WSL2.
+      </div>
     </div>
 
     <div class="step">
-      <span class="step-label">All Three</span>
-      <h3>Install Claude Code, Gemini CLI, and Codex</h3>
-      <p>Inside your WSL2 terminal, all three tools use their standard Linux install commands:</p>
-      <pre><code><span class="comment"># Claude Code (native binary — no Node.js needed)</span>
-<span class="cmd">curl</span> <span class="flag">-fsSL</span> https://claude.ai/install.sh | <span class="cmd">bash</span>
+      <span class="step-label">Manual Fallback</span>
+      <h3>Prefer to run the commands yourself?</h3>
+      <p>If you'd rather skip the AI CLI for this part, the raw commands are below. Run them in your WSL2 terminal in order.</p>
+      <pre><code><span class="comment"># 1. Node.js via nvm</span>
+<span class="cmd">curl</span> <span class="flag">-o-</span> https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | <span class="cmd">bash</span>
+<span class="cmd">source</span> ~/.bashrc
+<span class="cmd">nvm</span> install <span class="flag">--lts</span>
 
-<span class="comment"># Gemini CLI</span>
+<span class="comment"># 2. Python toolchain</span>
+<span class="cmd">sudo</span> apt install python3 python3-pip python3-venv <span class="flag">-y</span>
+
+<span class="comment"># 3. Other AI CLIs</span>
 <span class="cmd">npm</span> install <span class="flag">-g</span> @google/gemini-cli
+<span class="cmd">npm</span> install <span class="flag">-g</span> @openai/codex
 
-<span class="comment"># OpenAI Codex</span>
-<span class="cmd">npm</span> install <span class="flag">-g</span> @openai/codex</code></pre>
-      <p>Authenticate each one by running the command (<code class="inline">claude</code>, <code class="inline">gemini</code>, or <code class="inline">codex</code>) and following the browser prompts.</p>
-      <div class="tip">
-        <strong>Browser links work!</strong> When a CLI says "open this URL to authenticate," it will automatically open your Windows browser even though you're inside WSL2.
-      </div>
+<span class="comment"># 4. Git identity (use your GitHub no-reply email)</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.name <span class="string">"Your Name"</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> user.email <span class="string">"ID+username@users.noreply.github.com"</span>
+<span class="cmd">git</span> config <span class="flag">--global</span> init.defaultBranch main</code></pre>
+      <p>For the PowerShell <code class="inline">ubuntu</code> shortcut, open PowerShell on Windows and run <code class="inline">notepad $PROFILE</code> (say yes if it offers to create the file), then add and save:</p>
+      <pre><code><span class="cmd">function</span> ubuntu { <span class="cmd">wsl</span> <span class="flag">-d</span> Ubuntu }</code></pre>
+      <p>See our <a href="git-setup.html">Git Setup Guide</a> for full SSH-key instructions (use the "Linux / WSL2" tab for each step).</p>
     </div>
   </div>
 
@@ -592,7 +677,7 @@ Retype new password: <span class="string">********</span></code></pre>
     <div class="issue">
       <div class="issue-title">"npm WARN EBADPLATFORM" or packages won't install</div>
       <div class="issue-fix">
-        If you installed Node.js via the Windows installer, it won't work inside WSL. Install Node.js separately inside WSL using nvm (see Phase 2 above). Windows and WSL have completely separate software installations.
+        If you installed Node.js via the Windows installer, it won't work inside WSL. Install Node.js separately inside WSL using nvm (see Phase 3 above &mdash; either ask Claude or run the manual commands). Windows and WSL have completely separate software installations.
       </div>
     </div>
 
@@ -616,6 +701,15 @@ processors=2</code></pre>
   </div>
 
 </div>
+
+<script>
+function showTool(tool) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tool-section').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.tab-btn[data-tool="${tool}"]`).classList.add('active');
+  document.getElementById(tool).classList.add('active');
+}
+</script>
 
 </body>
 </html>
