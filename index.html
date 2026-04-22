@@ -383,6 +383,7 @@
         <button class="os-btn active" onclick="showOS(this, 'mac')">macOS</button>
         <button class="os-btn" onclick="showOS(this, 'win-ps')">Windows PowerShell</button>
         <button class="os-btn" onclick="showOS(this, 'win-cmd')">Windows CMD</button>
+        <button class="os-btn" onclick="showOS(this, 'wsl2')">WSL2 (Linux)</button>
       </div>
 
       <div class="os-content active" data-os="mac" data-group="claude-install">
@@ -393,6 +394,9 @@
       </div>
       <div class="os-content" data-os="win-cmd" data-group="claude-install">
         <pre><code><span class="cmd">curl</span> <span class="flag">-fsSL</span> https://claude.ai/install.cmd <span class="flag">-o</span> install.cmd && install.cmd && del install.cmd</code></pre>
+      </div>
+      <div class="os-content" data-os="wsl2" data-group="claude-install">
+        <pre><code><span class="cmd">curl</span> <span class="flag">-fsSL</span> https://claude.ai/install.sh | <span class="cmd">bash</span></code></pre>
       </div>
 
       <div class="warning">
@@ -465,6 +469,7 @@
       <div class="os-tabs" data-group="gemini-node">
         <button class="os-btn active" onclick="showOS(this, 'mac')">macOS</button>
         <button class="os-btn" onclick="showOS(this, 'win')">Windows</button>
+        <button class="os-btn" onclick="showOS(this, 'wsl2')">WSL2 (Linux)</button>
       </div>
 
       <div class="os-content active" data-os="mac" data-group="gemini-node">
@@ -477,6 +482,12 @@
         <pre><code><span class="comment"># Download the Windows installer from https://nodejs.org</span>
 <span class="comment"># Or use winget:</span>
 <span class="cmd">winget</span> install OpenJS.NodeJS.LTS</code></pre>
+      </div>
+      <div class="os-content" data-os="wsl2" data-group="gemini-node">
+        <pre><code><span class="comment"># Use nvm (Node Version Manager)</span>
+<span class="cmd">curl</span> <span class="flag">-o-</span> https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | <span class="cmd">bash</span>
+<span class="cmd">source</span> ~/.bashrc
+<span class="cmd">nvm</span> install <span class="flag">--lts</span></code></pre>
       </div>
 
       <p>Verify with: <code>node --version</code> (should show v20+)</p>
@@ -565,6 +576,7 @@
       <div class="os-tabs" data-group="codex-node">
         <button class="os-btn active" onclick="showOS(this, 'mac')">macOS</button>
         <button class="os-btn" onclick="showOS(this, 'win')">Windows</button>
+        <button class="os-btn" onclick="showOS(this, 'wsl2')">WSL2 (Linux)</button>
       </div>
 
       <div class="os-content active" data-os="mac" data-group="codex-node">
@@ -577,6 +589,12 @@
         <pre><code><span class="comment"># Download the Windows installer from https://nodejs.org</span>
 <span class="comment"># Or use winget:</span>
 <span class="cmd">winget</span> install OpenJS.NodeJS.LTS</code></pre>
+      </div>
+      <div class="os-content" data-os="wsl2" data-group="codex-node">
+        <pre><code><span class="comment"># Use nvm (Node Version Manager)</span>
+<span class="cmd">curl</span> <span class="flag">-o-</span> https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | <span class="cmd">bash</span>
+<span class="cmd">source</span> ~/.bashrc
+<span class="cmd">nvm</span> install <span class="flag">--lts</span></code></pre>
       </div>
 
       <p>Verify with: <code>node --version</code> (should show v20+)</p>
