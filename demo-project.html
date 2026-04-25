@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo Project: Stock Monitor — FF Office Hours</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --border: #2a2d3a;
+    --text: #e0e0e6;
+    --muted: #8b8fa3;
+    --accent-claude: #d4a27f;
+    --accent-gemini: #8ab4f8;
+    --accent-codex: #7ee8a8;
+    --code-bg: #141620;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 2rem 1rem;
+  }
+
+  .container { max-width: 860px; margin: 0 auto; }
+
+  h1 { font-size: 2.2rem; font-weight: 700; text-align: center; margin-bottom: 0.5rem; }
+  .subtitle { text-align: center; color: var(--muted); margin-bottom: 2.5rem; }
+
+  .intro {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .intro h2 { font-size: 1.2rem; color: #fff; margin-bottom: 0.8rem; }
+  .intro p { color: var(--muted); font-size: 0.95rem; }
+
+  /* Workflow Steps */
+  .workflow-step {
+    margin-bottom: 2rem;
+    padding-left: 3rem;
+    position: relative;
+  }
+
+  .step-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2.2rem;
+    height: 2.2rem;
+    background: var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #fff;
+  }
+
+  .step-1 .step-icon { background: var(--accent-gemini); color: #000; }
+  .step-2 .step-icon { background: var(--accent-claude); color: #000; }
+  .step-3 .step-icon { background: var(--accent-codex); color: #000; }
+
+  .workflow-content {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+
+  .workflow-content h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: #fff; }
+  .workflow-content p { font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem; }
+
+  .prompt-box {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 0.8rem;
+  }
+
+  .prompt-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-gemini);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  code {
+    font-family: 'SF Mono', monospace;
+    font-size: 0.85rem;
+    color: #c9d1d9;
+    white-space: pre-wrap;
+  }
+
+  .mentor-note {
+    border-left: 3px solid var(--accent-claude);
+    padding: 0.8rem 1rem;
+    background: #d4a27f10;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .mentor-note strong { color: var(--accent-claude); }
+
+  .footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Stock Monitor Demo</h1>
+  <p class="subtitle">An AI-Native workflow for building a financial data dashboard</p>
+
+  <div class="intro">
+    <h2>Project Goal</h2>
+    <p>Build a web app that tracks stock tickers and displays: 2-year High/Low offsets, P/E & PEG ratios, Price-to-Sales, and a Momentum indicator (Trending Up/Down/Consolidating).</p>
+  </div>
+
+  <!-- PHASE 1: PLANNING -->
+  <div class="workflow-step step-1">
+    <div class="step-icon">1</div>
+    <div class="workflow-content">
+      <h3>Planning Mode</h3>
+      <p>Start by asking the AI to architect the system. Do not write code yet.</p>
+      <div class="prompt-box">
+        <span class="prompt-label">The Prompt</span>
+        <code>I want to build a Stock Monitor web app. 
+- Features: Ticker input, high/low offsets, financial ratios, momentum indicator.
+- Tech: Node.js/Express backend, Vanilla JS frontend.
+- API: Use Alpha Vantage or Yahoo Finance.
+
+Please enter PLANNING MODE and draft a technical architecture. Focus on data flow, caching to avoid API rate limits, and how momentum will be calculated.</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2: THE INTERVIEW -->
+  <div class="workflow-step step-2">
+    <div class="step-icon">2</div>
+    <div class="workflow-content">
+      <h3>The Deep-Dive Interview</h3>
+      <p>Now, let the AI probe for missing requirements. This prevents "guesswork" coding.</p>
+      <div class="prompt-box">
+        <span class="prompt-label">The Prompt</span>
+        <code>Based on that plan, please ask me 3-5 high-impact clarifying questions. Think like a Senior Engineer trying to avoid edge-case failures (e.g., market-closed data, invalid tickers, API timeouts).</code>
+      </div>
+      <div class="mentor-note">
+        <strong>Mentor Tip:</strong> Pay attention to the "Momentum" definition. Is it a 50-day moving average or simple 5-day trend? Get specific here!
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3: MENTOR REVIEW -->
+  <div class="workflow-step step-3">
+    <div class="step-icon">3</div>
+    <div class="workflow-content">
+      <h3>Senior Dev Mentor (Plan Review)</h3>
+      <p>Invoke a specialized "Mentor Agent" to critique the final architecture before a single line is written.</p>
+      <div class="prompt-box">
+        <span class="prompt-label">The Prompt</span>
+        <code>Act as a Senior Staff Engineer. Review the current plan. Identify 3 potential architectural risks (e.g., race conditions on ticker updates, missing error boundaries, or improper data sanitization) and suggest improvements.</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 4: CODE & DOCS -->
+  <div class="workflow-step">
+    <div class="step-icon">4</div>
+    <div class="workflow-content">
+      <h3>Implementation & Docs</h3>
+      <p>Execute the plan. Have the AI write the code and the internal documentation simultaneously.</p>
+      <div class="prompt-box">
+        <span class="prompt-label">The Prompt</span>
+        <code>Now, implement the project following the approved plan. 
+1. Create the server-side logic first.
+2. Write a README.md explaining the "Why" behind the momentum calculation.
+3. Build the frontend UI.</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 5: TESTING & SECURITY -->
+  <div class="workflow-step">
+    <div class="step-icon">5</div>
+    <div class="workflow-content">
+      <h3>Testing & Security Audit</h3>
+      <p>Don't trust the first output. Have a QA agent verify it and a Security agent scan it.</p>
+      <div class="prompt-box">
+        <span class="prompt-label">The Prompt</span>
+        <code>1. Act as a QA Engineer: Write and run tests that mock the stock API. Ensure the 'Consolidation' state is triggered if price moves < 1% over 5 days.
+2. Act as a Security Auditor: Scan the code for hardcoded API keys or sensitive data exposure.</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 6: FINAL PR REVIEW -->
+  <div class="workflow-step">
+    <div class="step-icon">6</div>
+    <div class="workflow-content">
+      <h3>The Senior Dev PR Review</h3>
+      <p>The final step. Treat the finished code like a Pull Request at a top-tier tech company.</p>
+      <div class="prompt-box">
+        <span class="prompt-label">The Prompt</span>
+        <code>Perform a final Pull Request review. Critique code readability, use of modern JS features (like AbortController for fetch), and whether the financial math is robust. Suggest 2 final refactors for performance.</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    FF Office Hours &mdash; AI-Native Workflow Demo &mdash; April 2026
+  </div>
+</div>
+
+</body>
+</html>
