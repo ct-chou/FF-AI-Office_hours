@@ -609,6 +609,38 @@ what's already installed and skip anything that's there.
     </div>
   </div>
 
+  <!-- ======================== PHASE 5: VS CODE & WSL2 ======================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">5</span>
+      <h2>VS Code &amp; WSL2</h2>
+    </div>
+    <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1.2rem;">The "Remote - WSL" workflow is the gold standard for Windows development. It allows you to run VS Code on Windows while the actual code, tools, and terminal run inside Linux.</p>
+
+    <div class="step">
+      <span class="step-label">Install</span>
+      <h3>1. Install VS Code on Windows</h3>
+      <p>If you haven't already, download and install <a href="https://code.visualstudio.com/">Visual Studio Code</a> on Windows. <strong>Do not</strong> try to install the Linux version of VS Code inside WSL.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Extension</span>
+      <h3>2. Install the WSL Extension</h3>
+      <p>Open VS Code on Windows, go to the <strong>Extensions</strong> view (<code class="inline">Ctrl+Shift+X</code>), and search for <strong>"WSL"</strong>. Install the official extension by Microsoft.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-label">Launch</span>
+      <h3>3. Open a project from WSL</h3>
+      <p>Now, go back to your <strong>WSL Ubuntu terminal</strong>, navigate to a project folder, and type:</p>
+      <pre><code><span class="cmd">code</span> .</code></pre>
+      <p>VS Code will open on Windows, but it will be "connected" to your Ubuntu environment. You'll see <code class="inline">WSL: Ubuntu</code> in the bottom-left corner.</p>
+      <div class="tip">
+        <strong>Extensions in WSL:</strong> Some extensions (like Python or ESLint) need to be installed "specifically" in WSL. When you open a project, check the Extensions view — you'll see a section titled "WSL: Ubuntu - Installed" where you can add them.
+      </div>
+    </div>
+  </div>
+
   <!-- ======================== CHEAT SHEET ======================== -->
   <div class="cheat">
     <h2>WSL2 Quick Reference</h2>
@@ -617,6 +649,9 @@ what's already installed and skip anything that's there.
 
 <span class="comment"># Open WSL in the current Windows directory</span>
 <span class="cmd">wsl</span> <span class="flag">--cd</span> .
+
+<span class="comment"># Open VS Code from inside WSL</span>
+<span class="cmd">code</span> .
 
 <span class="comment"># Open Windows Explorer from inside WSL</span>
 <span class="cmd">explorer.exe</span> .

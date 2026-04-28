@@ -136,6 +136,25 @@
     <p>Build a web app that tracks stock tickers and displays: 2-year High/Low offsets, P/E & PEG ratios, Price-to-Sales, and a Momentum indicator (Trending Up/Down/Consolidating).</p>
   </div>
 
+  <!-- PHASE 0: PROJECT SETUP -->
+  <div class="workflow-step">
+    <div class="step-icon" style="background: var(--muted);">0</div>
+    <div class="workflow-content">
+      <h3>Initialize Your Project</h3>
+      <p>Before you start orchestrating agents, you need a workspace for them to live in. Create this inside your <code>repos</code> directory so your AI CLI can track every change you're about to make.</p>
+      <div class="prompt-box">
+        <span class="prompt-label">Terminal Commands</span>
+        <code>cd ~/repos
+mkdir stock-monitor
+cd stock-monitor
+git init
+touch index.html server.js README.md
+git add .
+git commit -m "chore: initial commit"</code>
+      </div>
+    </div>
+  </div>
+
   <!-- PHASE 1: PLANNING -->
   <div class="workflow-step step-1">
     <div class="step-icon">1</div>
@@ -144,7 +163,7 @@
       <p>Start by asking the AI to architect the system. Do not write code yet.</p>
       <div class="prompt-box">
         <span class="prompt-label">The Prompt</span>
-        <code>I want to build a Stock Monitor web app. 
+        <code>I want to build a Stock Monitor web app in this folder. 
 - Features: Ticker input, high/low offsets, financial ratios, momentum indicator.
 - Tech: Node.js/Express backend, Vanilla JS frontend.
 - API: Use Alpha Vantage or Yahoo Finance.
@@ -222,6 +241,36 @@ Please enter PLANNING MODE and draft a technical architecture. Focus on data flo
       <div class="prompt-box">
         <span class="prompt-label">The Prompt</span>
         <code>Perform a final Pull Request review. Critique code readability, use of modern JS features (like AbortController for fetch), and whether the financial math is robust. Suggest 2 final refactors for performance.</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 7: TROUBLESHOOTING -->
+  <div class="workflow-step">
+    <div class="step-icon" style="background: #ff4b2b;">7</div>
+    <div class="workflow-content">
+      <h3>Troubleshooting</h3>
+      <p>If you encounter any bugs or unexpected behavior during implementation, use the AI to debug them immediately.</p>
+      <div class="prompt-box">
+        <span class="prompt-label">The Prompt</span>
+        <code>Any issues you have, just paste the errors back into the CLI. Explain what you were trying to do and provide the full error message for a quick fix.</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 8: GIT WORKFLOW -->
+  <div class="workflow-step">
+    <div class="step-icon" style="background: #f05032;">8</div>
+    <div class="workflow-content">
+      <h3>Git &amp; PR Workflow</h3>
+      <p>Professional engineering isn't just about code; it's about how you communicate that code to your team.</p>
+      <div class="prompt-box">
+        <span class="prompt-label">The Prompt</span>
+        <code>1. Stage all changes and craft a semantic commit message (e.g., `feat: add momentum indicators and financial ratios`).
+2. Generate a high-quality Pull Request description that summarizes the changes, the testing strategy used, and any architectural decisions made.</code>
+      </div>
+      <div class="mentor-note">
+        <strong>Senior Tip:</strong> A great PR description makes the reviewer's life easy. Always include a "Testing" section so they know how you verified your work!
       </div>
     </div>
   </div>
