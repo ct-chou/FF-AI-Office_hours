@@ -518,9 +518,12 @@
 <span class="cmd">Start-Service</span> ssh-agent
 
 <span class="comment"># THEN: In your regular (non-admin) PowerShell, add your key:</span>
-<span class="cmd">ssh-add</span> ~\.ssh\id_ed25519</code></pre>
+<span class="cmd">ssh-add</span> $HOME\.ssh\id_ed25519</code></pre>
         <div class="danger">
           <strong>Common error:</strong> "Access is denied" on <code class="inline">Set-Service</code> means you're not in an admin PowerShell. Right-click PowerShell &rarr; "Run as administrator" for just those first two lines.
+        </div>
+        <div class="tip">
+          <strong>Note:</strong> We recommend using <strong>PowerShell</strong>. If you must use <strong>Command Prompt (CMD)</strong>, use this path instead: <code class="inline">ssh-add %USERPROFILE%\.ssh\id_ed25519</code>
         </div>
       </div>
 
@@ -548,7 +551,7 @@
       </div>
 
       <div class="os-content" data-os="win" data-group="ssh-copy">
-        <pre><code><span class="cmd">Get-Content</span> ~\.ssh\id_ed25519.pub | <span class="cmd">Set-Clipboard</span></code></pre>
+        <pre><code><span class="cmd">Get-Content</span> $HOME\.ssh\id_ed25519.pub | <span class="cmd">Set-Clipboard</span></code></pre>
       </div>
 
       <div class="os-content" data-os="linux" data-group="ssh-copy">
@@ -608,8 +611,8 @@
       </div>
 
       <div class="os-content" data-os="win" data-group="repos-folder">
-        <pre><code><span class="cmd">mkdir</span> ~\repos
-<span class="cmd">cd</span> ~\repos</code></pre>
+        <pre><code><span class="cmd">mkdir</span> $HOME\repos
+<span class="cmd">cd</span> $HOME\repos</code></pre>
       </div>
 
       <div class="os-content" data-os="linux" data-group="repos-folder">
@@ -618,7 +621,7 @@
       </div>
 
       <div class="warning">
-        <strong>Windows users:</strong> Don't put repos inside OneDrive-synced folders! OneDrive can corrupt the <code class="inline">.git</code> directory and cause weird issues. The <code class="inline">~\repos</code> folder sits outside OneDrive by default.
+        <strong>Windows users:</strong> Don't put repos inside OneDrive-synced folders! OneDrive can corrupt the <code class="inline">.git</code> directory and cause weird issues. The <code class="inline">$HOME\repos</code> folder sits outside OneDrive by default.
       </div>
     </div>
   </div>
