@@ -424,6 +424,12 @@
       </div>
       <div class="os-content" data-os="win-cmd" data-group="claude-install">
         <pre><code><span class="cmd">curl</span> <span class="flag">-fsSL</span> https://claude.ai/install.cmd <span class="flag">-o</span> install.cmd && install.cmd && del install.cmd</code></pre>
+        <div class="tip">
+          <strong>If the installer says "Native installation exists but ... is not in your PATH":</strong> it placed <code>claude.exe</code> in <code>%USERPROFILE%\.local\bin</code> but couldn't register that folder on PATH. Run these two commands to fix it &mdash; the first persists PATH for future terminals (it calls PowerShell to avoid the <code>setx</code> footgun of copying your entire merged PATH into the User variable), the second updates the current CMD session so you don't need to reopen it:
+          <pre><code><span class="cmd">powershell</span> <span class="flag">-Command</span> <span class="string">"[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path','User') + ';' + $env:USERPROFILE + '\.local\bin', 'User')"</span></code></pre>
+          <pre><code><span class="cmd">set</span> PATH=%PATH%;%USERPROFILE%\.local\bin</code></pre>
+          Then <code>claude --version</code> will work.
+        </div>
       </div>
       <div class="os-content" data-os="wsl2" data-group="claude-install">
         <pre><code><span class="cmd">curl</span> <span class="flag">-fsSL</span> https://claude.ai/install.sh | <span class="cmd">bash</span></code></pre>
