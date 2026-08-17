@@ -235,6 +235,30 @@
     border-top: none;
   }
 
+  .copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 5px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  pre:hover .copy-btn,
+  .copy-btn:focus { opacity: 1; }
+  .copy-btn:hover { color: var(--text); border-color: var(--muted); }
+  .copy-btn.copied {
+    color: var(--accent-codex);
+    border-color: var(--accent-codex);
+    opacity: 1;
+  }
+
   code {
     font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
     color: #c9d1d9;
@@ -391,6 +415,12 @@
       </div>
       <div class="os-content" data-os="win-ps" data-group="claude-install">
         <pre><code><span class="cmd">irm</span> https://claude.ai/install.ps1 | <span class="cmd">iex</span></code></pre>
+        <div class="tip">
+          <strong>If the installer says "Native installation exists but ... is not in your PATH":</strong> it placed <code>claude.exe</code> in <code>$HOME\.local\bin</code> but couldn't register that folder on PATH. Run these two commands to fix it &mdash; the first persists PATH for future terminals, the second updates the current session so you don't need to reopen PowerShell:
+          <pre><code>[<span class="cmd">Environment</span>]::SetEnvironmentVariable(<span class="string">"Path"</span>, [<span class="cmd">Environment</span>]::GetEnvironmentVariable(<span class="string">"Path"</span>,<span class="string">"User"</span>) + <span class="string">";$HOME\.local\bin"</span>, <span class="string">"User"</span>)</code></pre>
+          <pre><code><span class="cmd">$env:Path</span> += <span class="string">";$HOME\.local\bin"</span></code></pre>
+          Then <code>claude --version</code> will work.
+        </div>
       </div>
       <div class="os-content" data-os="win-cmd" data-group="claude-install">
         <pre><code><span class="cmd">curl</span> <span class="flag">-fsSL</span> https://claude.ai/install.cmd <span class="flag">-o</span> install.cmd && install.cmd && del install.cmd</code></pre>
@@ -729,6 +759,37 @@ function showOS(btn, os) {
   group.querySelectorAll(`.os-content[data-group="${tabGroup}"]`).forEach(c => c.classList.remove('active'));
   group.querySelector(`.os-content[data-os="${os}"][data-group="${tabGroup}"]`).classList.add('active');
 }
+
+document.querySelectorAll('pre').forEach(pre => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'copy-btn';
+  btn.textContent = 'Copy';
+  btn.setAttribute('aria-label', 'Copy code to clipboard');
+  btn.addEventListener('click', async () => {
+    const code = pre.querySelector('code');
+    const text = (code ? code.textContent : pre.textContent).replace(/\n+$/, '');
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (_) {}
+      document.body.removeChild(ta);
+    }
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    clearTimeout(btn._resetTimer);
+    btn._resetTimer = setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 1500);
+  });
+  pre.appendChild(btn);
+});
 </script>
 
 </body>
