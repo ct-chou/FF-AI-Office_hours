@@ -356,8 +356,7 @@
   <div class="prereqs">
     <h2>Before You Start</h2>
     <ul>
-      <li><strong>Sign up for GitHub</strong> &mdash; Free at <a href="https://github.com/signup">github.com/signup</a>. You'll need this for hosting code and version control.</li>
-      <li><strong>Git installed &amp; configured</strong> &mdash; See our <a href="git-setup.html"><strong>Git Setup Guide</strong></a> for reference. We'll walk through this together during office hours.</li>
+      <li><strong>Sign up for GitHub</strong> &mdash; Free at <a href="https://github.com/signup">github.com/signup</a>. You'll need this for hosting code and version control. This is the only step you have to do in a browser &mdash; everything else, including Git itself, you'll install through your AI CLI further down.</li>
       <li><strong>A terminal app</strong> &mdash; Mac: Terminal or iTerm2 &nbsp;|&nbsp; Windows: PowerShell or CMD</li>
       <li><strong>Windows users: Consider WSL2</strong> &mdash; Optional but recommended if you plan to run Python scripts, use Docker, or prefer a Linux environment. See our <a href="wsl2-setup.html"><strong>WSL2 Setup Guide</strong></a> to decide if it's right for you.</li>
       <li><strong>Accounts</strong> &mdash; Claude (Pro/Max), Google account (Gemini), ChatGPT Plus/Pro (Codex)</li>
@@ -436,7 +435,7 @@
       </div>
 
       <div class="warning">
-        <strong>Windows users:</strong> Install <a href="https://git-scm.com/downloads/win">Git for Windows</a> first. If your prompt shows <code>PS C:\</code>, you're in PowerShell &mdash; use the PowerShell command.
+        <strong>Windows users:</strong> Not sure which shell you're in? If your prompt shows <code>PS C:\</code>, you're in PowerShell &mdash; use the PowerShell command. Otherwise use the CMD command.
       </div>
     </div>
 
@@ -675,6 +674,34 @@
       <pre><code><span class="cmd">cd</span> my-project
 <span class="cmd">codex</span>
 <span class="comment"># Then type: "Explain this repo"</span></code></pre>
+    </div>
+  </div>
+
+  <!-- ======================== NEXT: INSTALL GIT VIA YOUR AI CLI ======================== -->
+  <div class="prereqs" style="margin-top: 2rem;">
+    <h2>Next: Let your AI CLI install Git for you</h2>
+    <p style="color: var(--muted); margin: 0.5rem 0 1rem;">Now that you have a working AI CLI, use it to install and configure Git. Works with Claude Code, Gemini CLI, or Codex &mdash; the prompt below is the same for all three.</p>
+    <p style="color: var(--muted); margin: 0 0 1rem;"><strong style="color: var(--text);">Grab your GitHub no-reply email first.</strong> Find it at <a href="https://github.com/settings/emails">github.com/settings/emails</a> &mdash; it looks like <code>12345678+yourusername@users.noreply.github.com</code>. Using it (instead of your personal email) avoids GitHub rejecting your first push with a privacy error.</p>
+    <p style="color: var(--muted); margin: 0 0 1rem;">Launch your CLI (<code>claude</code>, <code>gemini</code>, or <code>codex</code>) from any terminal and paste this:</p>
+    <pre><code><span class="comment"># Example prompt:</span>
+Please install and configure Git on my machine step by step,
+showing me each command before running it. First check whether
+Git is already installed and skip that step if it is.
+
+1. Detect my OS (macOS / Windows / Linux) and install Git the
+   idiomatic way for it.
+2. Configure git with my name and my GitHub no-reply email &mdash;
+   ask me for both.
+3. Set the default branch name to "main".
+4. Walk me through generating an SSH key (ed25519) and adding it
+   to my GitHub account. I'll paste the public key into GitHub
+   myself when you show it to me.
+5. Verify everything works by running `ssh -T git@github.com`.</code></pre>
+    <div class="tip" style="margin-top: 1rem;">
+      <strong>Prefer the manual walk-through?</strong> The <a href="git-setup.html">Git Setup Guide</a> has the full step-by-step for every platform &mdash; use it as a reference, or as a fallback if the AI-driven approach hits a snag.
+    </div>
+    <div class="tip">
+      <strong>Why ask "show me each command before running it"?</strong> All three CLIs will ask permission for system-modifying commands by default, but being explicit keeps you in a review-and-approve flow &mdash; you see exactly what's being changed and learn the underlying commands as you go.
     </div>
   </div>
 
